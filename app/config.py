@@ -13,4 +13,5 @@ PROCESSED_DIR = DATA_DIR / "processed"
 
 RESULTS_CSV = DATA_DIR / "results.csv"
 HQ_CSV = DATA_DIR / "district_hqs.csv"
+DISTRICT_DETAILS_JSON = DATA_DIR / "district_details.json"
 DB_PATH = DATA_DIR / "kerala.db"

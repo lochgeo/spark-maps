@@ -27,9 +27,10 @@ app = FastAPI(
     title="Kerala Map API",
     description=(
         "Districts and legislative assembly constituencies of Kerala, with the "
-        "winning MLA for the 2021 and 2026 elections."
+        "winning MLA for the 2021 and 2026 elections, plus administrative "
+        "profiles for districts that have them."
     ),
-    version="0.2.0",
+    version="0.3.0",
     lifespan=lifespan,
 )
 app.add_middleware(GZipMiddleware, minimum_size=800)
@@ -81,6 +82,27 @@ def get_constituency(ac_no: int, year: int | None = None) -> dict:
 @app.get("/api/districts", tags=["districts"])
 def list_districts(year: int | None = None) -> list[dict]:
     return store.districts_by_year[resolve_year(year)]
+
+
+@app.get("/api/districts/{name}/details", tags=["districts"])
+def get_district_details(name: str) -> dict:
+    profile = store.district_details.get(name)
+    if profile is None:
+        profile = next(
+            (
+                candidate
+                for key, candidate in store.district_details.items()
+                if key.casefold() == name.casefold()
+            ),
+            None,
+        )
+    if profile is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No administrative profile for {name}. Available: "
+            + (", ".join(sorted(store.district_details)) or "none"),
+        )
+    return profile
 
 
 @app.get("/api/district-headquarters", tags=["districts"])

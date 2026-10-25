@@ -106,6 +106,8 @@ def test_districts(client: TestClient) -> None:
         "lat": pytest.approx(10.01657),
         "lng": pytest.approx(76.34275),
     }
+    assert ernakulam["has_details"] is False
+    assert districts["Thrissur"]["has_details"] is True
 
 
 def test_districts_2021(client: TestClient) -> None:
@@ -113,6 +115,68 @@ def test_districts_2021(client: TestClient) -> None:
     ernakulam = districts["Ernakulam"]
     assert ernakulam["seats"] == {"LDF": 5, "UDF": 9, "NDA": 0}
     assert ernakulam["headquarters"]["name"] == "Kakkanad"
+
+
+def test_district_details(client: TestClient) -> None:
+    response = client.get("/api/districts/Thrissur/details")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["district"] == "Thrissur"
+    assert data["counts"] == {
+        "revenue_divisions": 2,
+        "taluks": 7,
+        "villages": 255,
+        "blocks": 16,
+        "gram_panchayats": 86,
+        "municipalities": 7,
+        "municipal_corporations": 1,
+        "towns": 135,
+        "census_towns": 127,
+        "assembly_seats": 13,
+        "parliamentary_seats": 3,
+    }
+
+    divisions = {division["name"]: division["taluks"] for division in data["revenue_divisions"]}
+    assert divisions["Thrissur"] == ["Thrissur", "Chavakkad", "Talappilly", "Kunnamkulam"]
+    assert divisions["Irinjalakuda"] == ["Mukundapuram", "Chalakudy", "Kodungallur"]
+
+    taluks = {taluk["name"]: taluk for taluk in data["taluks"]}
+    assert len(taluks) == 7
+    assert sum(len(taluk["villages"]) for taluk in taluks.values()) == 255
+    assert len(taluks["Thrissur"]["villages"]) == 74
+    assert taluks["Talappilly"]["headquarters"] == "Wadakkanchery"
+    assert taluks["Mukundapuram"]["headquarters"] == "Irinjalakuda"
+
+    blocks = data["local_government"]["blocks"]
+    assert len(blocks) == 16
+    assert sum(len(block["gram_panchayats"]) for block in blocks) == 86
+    puzhakkal = next(block for block in blocks if block["name"] == "Puzhakkal")
+    assert len(puzhakkal["gram_panchayats"]) == 6
+    assert "Adat" in puzhakkal["gram_panchayats"]
+
+    towns = data["towns"]
+    assert len(towns) == 135
+    assert sum(1 for town in towns if town["status"] == "Municipality") == 7
+    assert sum(1 for town in towns if town["status"] == "Municipal corporation") == 1
+    assert all(town["population_2011"] > 0 for town in towns)
+
+    assert [seat["ac_no"] for seat in data["assembly_seats"]] == list(range(61, 74))
+    assert data["assembly_seats"][-1] == {"ac_no": 73, "name": "Kodungallur"}
+    assert data["parliamentary_seats"] == ["Thrissur", "Chalakudy", "Alathur"]
+    assert len(data["sources"]) >= 4
+
+
+def test_district_details_case_insensitive(client: TestClient) -> None:
+    response = client.get("/api/districts/thrissur/details")
+    assert response.status_code == 200
+    assert response.json()["district"] == "Thrissur"
+
+
+def test_district_details_unknown(client: TestClient) -> None:
+    response = client.get("/api/districts/Ernakulam/details")
+    assert response.status_code == 404
+    assert "No administrative profile" in response.json()["detail"]
 
 
 def test_district_headquarters(client: TestClient) -> None:

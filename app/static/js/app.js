@@ -43,6 +43,8 @@
     districts: [],
     byAc: new Map(),
     byDistrict: new Map(),
+    districtDetails: new Map(),
+    districtDetailRequests: new Map(),
     acLayers: new Map(),
     districtLayers: new Map(),
     acLayer: null,
@@ -809,7 +811,37 @@
     `);
   }
 
-  function showDistrictDetails(district) {
+  async function showDistrictDetails(district) {
+    const profile = district.has_details ? await loadDistrictDetails(district.name) : null;
+    if (state.selected?.type !== "district" || state.selected.id !== district.name) return;
+    openDetails(renderDistrictDetails(district, profile));
+  }
+
+  function loadDistrictDetails(name) {
+    if (state.districtDetails.has(name)) {
+      return Promise.resolve(state.districtDetails.get(name));
+    }
+    if (state.districtDetailRequests.has(name)) {
+      return state.districtDetailRequests.get(name);
+    }
+
+    const request = fetchJSON(`/api/districts/${encodeURIComponent(name)}/details`)
+      .then((profile) => {
+        state.districtDetails.set(name, profile);
+        return profile;
+      })
+      .catch((error) => {
+        console.error(error);
+        state.districtDetails.set(name, null);
+        return null;
+      })
+      .finally(() => state.districtDetailRequests.delete(name));
+
+    state.districtDetailRequests.set(name, request);
+    return request;
+  }
+
+  function renderDistrictDetails(district, profile) {
     const members = district.ac_nos
       .map((acNo) => state.byAc.get(acNo))
       .filter(Boolean);
@@ -854,7 +886,13 @@
          </button>`
       : "";
 
-    openDetails(`
+    let admin = "";
+    if (profile) admin = renderDistrictProfile(profile);
+    else if (district.has_details) {
+      admin = '<p class="profile-note">Administrative profile unavailable right now.</p>';
+    }
+
+    return `
       <div class="details-top">
         <div>
           <div class="kicker">District · Kerala · ${district.ac_count} seats</div>
@@ -866,9 +904,167 @@
       <div class="seatbar-lg">${segments}</div>
       <div class="seat-legend">${seatLegend}</div>
       ${hqLine}
+      ${admin}
 
+      <div class="section-head">
+        <span>MLAs</span>
+        <small>${district.ac_count} seats · ${state.year}</small>
+      </div>
       <div class="mini-list">${rows}</div>
-    `);
+    `;
+  }
+
+  function renderDistrictProfile(profile) {
+    const counts = profile.counts ?? {};
+    const demo = profile.demographics ?? {};
+    const facts = [];
+
+    if (demo.population) {
+      facts.push(`${numberFormat.format(demo.population)} people${demo.population_year ? ` (${demo.population_year})` : ""}`);
+    }
+    if (demo.area_km2) facts.push(`${numberFormat.format(demo.area_km2)} km²`);
+    if (demo.literacy_rate) facts.push(`${demo.literacy_rate}% literacy`);
+    if (demo.urban_share) facts.push(`${demo.urban_share}% urban`);
+
+    const divisions = (profile.revenue_divisions ?? []).map(divisionHtml).join("");
+    const taluks = (profile.taluks ?? []).map(talukHtml).join("");
+    const blocks = (profile.local_government?.blocks ?? []).map(blockHtml).join("");
+    const districtPanchayat = profile.local_government?.district_panchayat;
+    const blocksBody = `${
+      districtPanchayat
+        ? `<div class="admin-note">District panchayat <b>${esc(districtPanchayat)}</b></div>`
+        : ""
+    }${blocks}`;
+    const towns = townGroupsHtml(profile.towns ?? []);
+
+    const sourceLinks = (profile.sources ?? [])
+      .map(
+        (source) =>
+          `<a href="${esc(source.url)}" target="_blank" rel="noopener" title="${esc(source.label)}">${esc(source.short ?? source.label)}</a>`,
+      )
+      .join("<span aria-hidden=\"true\"> · </span>");
+
+    return `
+      <div class="profile-head">
+        <span>Administrative profile</span>
+        <small>Retrieved ${esc(profile.retrieved)}</small>
+      </div>
+
+      <div class="profile-stats">
+        ${profileStat("Divisions", counts.revenue_divisions)}
+        ${profileStat("Taluks", counts.taluks)}
+        ${profileStat("Villages", counts.villages)}
+        ${profileStat("Blocks", counts.blocks)}
+        ${profileStat("Panchayats", counts.gram_panchayats)}
+        ${profileStat("Towns", counts.towns)}
+      </div>
+
+      <p class="profile-facts">${facts.map(esc).join(" · ")}</p>
+      <p class="profile-facts">${counts.assembly_seats ?? 0} assembly seats · ${counts.parliamentary_seats ?? 0} Lok Sabha seats (${esc((profile.parliamentary_seats ?? []).join(", "))})</p>
+
+      ${adminSection(
+        "Revenue divisions",
+        `${counts.revenue_divisions ?? 0} divisions`,
+        divisions,
+        true,
+      )}
+      ${adminSection(
+        "Taluks & villages",
+        `${counts.taluks ?? 0} taluks · ${counts.villages ?? 0} villages`,
+        taluks,
+      )}
+      ${adminSection(
+        "Blocks & panchayats",
+        `${counts.blocks ?? 0} blocks · ${counts.gram_panchayats ?? 0} panchayats`,
+        blocksBody,
+      )}
+      ${adminSection(
+        "Urban bodies & towns",
+        `${(counts.municipal_corporations ?? 0) + (counts.municipalities ?? 0)} urban bodies · ${counts.towns ?? 0} towns`,
+        towns,
+      )}
+
+      <p class="profile-source"><span>Sources:</span> ${sourceLinks}</p>
+    `;
+  }
+
+  function profileStat(label, value) {
+    return `<div class="pstat"><span>${esc(label)}</span><b>${numberFormat.format(value ?? 0)}</b></div>`;
+  }
+
+  function adminSection(title, meta, body, open = false) {
+    return `
+      <details class="admin-section"${open ? " open" : ""}>
+        <summary><span>${esc(title)}</span><small>${esc(meta)}</small></summary>
+        <div class="admin-body">${body}</div>
+      </details>`;
+  }
+
+  function divisionHtml(division) {
+    return `
+      <div class="admin-block">
+        <div class="admin-head">
+          <span>${esc(division.name)}</span>
+          <small>${division.taluks.length} taluks</small>
+        </div>
+        <div class="tag-list">${division.taluks.map((taluk) => `<span class="tag">${esc(taluk)}</span>`).join("")}</div>
+      </div>`;
+  }
+
+  function talukHtml(taluk) {
+    return `
+      <details class="acc-item">
+        <summary>
+          <span>${esc(taluk.name)}</span>
+          <small>${taluk.villages.length} villages · HQ ${esc(taluk.headquarters)}</small>
+        </summary>
+        <div class="tag-list scroll">${taluk.villages.map((village) => `<span class="tag">${esc(village)}</span>`).join("")}</div>
+      </details>`;
+  }
+
+  function blockHtml(block) {
+    return `
+      <details class="acc-item">
+        <summary>
+          <span>${esc(block.name)}</span>
+          <small>${block.gram_panchayats.length} panchayats</small>
+        </summary>
+        <div class="tag-list scroll">${block.gram_panchayats.map((panchayat) => `<span class="tag">${esc(panchayat)}</span>`).join("")}</div>
+      </details>`;
+  }
+
+  function townGroupsHtml(towns) {
+    const urban = towns.filter(
+      (town) => town.status === "Municipal corporation" || town.status === "Municipality",
+    );
+    const census = towns.filter((town) => town.status === "Census town");
+
+    const urbanRows = urban
+      .map(
+        (town) => `
+          <div class="town-row">
+            <span>${esc(town.name)}<em>${esc(town.status === "Municipal corporation" ? "Corporation" : "Municipality")}</em></span>
+            <small>${numberFormat.format(town.population_2011)}</small>
+          </div>`,
+      )
+      .join("");
+
+    const censusRows = census
+      .map(
+        (town) => `
+          <div class="town-row">
+            <span>${esc(town.name)}</span>
+            <small>${numberFormat.format(town.population_2011)}</small>
+          </div>`,
+      )
+      .join("");
+
+    return `
+      <div class="town-list urban">${urbanRows}</div>
+      <details class="acc-item">
+        <summary><span>Census towns</span><small>${census.length} towns</small></summary>
+        <div class="town-list scroll">${censusRows}</div>
+      </details>`;
   }
 
   function markActiveRow() {

@@ -6,6 +6,7 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from .config import DISTRICT_DETAILS_JSON
 from .db import fetch_headquarters, fetch_results
 
 ALLIANCE_ORDER = ("LDF", "UDF", "NDA")
@@ -45,6 +46,7 @@ class DataStore:
         self.by_ac_by_year: dict[int, dict[int, dict]] = {}
         self.districts_by_year: dict[int, list[dict]] = {}
         self.headquarters: list[dict] = []
+        self.district_details: dict[str, dict] = {}
         self.meta: dict = {}
         self.constituencies_geojson: dict[int, str] = {}
         self.districts_geojson: dict[int, str] = {}
@@ -59,6 +61,7 @@ class DataStore:
         if not self.headquarters:
             raise RuntimeError("No district headquarters found. Run the data pipeline first.")
         hq_by_district = {row["district"]: row for row in self.headquarters}
+        self.district_details = self._load_district_details(DISTRICT_DETAILS_JSON)
 
         grouped: dict[int, list[dict]] = defaultdict(list)
         for row in rows:
@@ -73,6 +76,7 @@ class DataStore:
                 grouped[year], hq_by_district
             )
 
+        self._enrich_district_details()
         self.meta = self._build_meta()
         for year in self.years:
             self.constituencies_geojson[year] = self._build_constituency_geojson(
@@ -112,11 +116,94 @@ class DataStore:
                         "lat": hq["latitude"],
                         "lng": hq["longitude"],
                     },
+                    "has_details": name in self.district_details,
                 }
             )
 
         districts.sort(key=lambda district: min(district["ac_nos"]))
         return districts
+
+    def _load_district_details(self, path: Path) -> dict[str, dict]:
+        """Load the hand-curated administrative profiles, failing loudly on bad data."""
+        if not path.exists():
+            return {}
+
+        profiles = json.loads(path.read_text(encoding="utf-8"))
+        for name, profile in profiles.items():
+            if profile.get("district") != name:
+                raise RuntimeError(f"District profile key {name!r} does not match its district")
+
+            taluks = profile.get("taluks", [])
+            taluk_names = [taluk["name"] for taluk in taluks]
+            if len(set(taluk_names)) != len(taluk_names):
+                raise RuntimeError(f"Duplicate taluk in the {name} profile")
+
+            division_taluks = [
+                taluk
+                for division in profile.get("revenue_divisions", [])
+                for taluk in division["taluks"]
+            ]
+            if sorted(division_taluks) != sorted(taluk_names):
+                raise RuntimeError(f"Revenue divisions and taluks disagree for {name}")
+
+            blocks = profile.get("local_government", {}).get("blocks", [])
+            panchayats = [
+                panchayat
+                for block in blocks
+                for panchayat in block["gram_panchayats"]
+            ]
+            if len(set(panchayats)) != len(panchayats):
+                raise RuntimeError(f"Duplicate gram panchayat in the {name} profile")
+
+            seat_numbers = profile.get("assembly_seats", [])
+            if len(set(seat_numbers)) != len(seat_numbers):
+                raise RuntimeError(f"Duplicate assembly seat in the {name} profile")
+
+        return profiles
+
+    def _enrich_district_details(self) -> None:
+        """Add shared election data and derived counts to each administrative profile."""
+        rows = self.by_ac_by_year[self.default_year]
+        summaries = {
+            district["name"]: district for district in self.districts_by_year[self.default_year]
+        }
+
+        for name, profile in self.district_details.items():
+            summary = summaries.get(name)
+            if summary is None:
+                raise RuntimeError(f"District profile {name!r} has no assembly results")
+
+            seat_numbers = [
+                seat["ac_no"] if isinstance(seat, dict) else seat
+                for seat in profile.get("assembly_seats", [])
+            ]
+            if seat_numbers != summary["ac_nos"]:
+                raise RuntimeError(
+                    f"Assembly seats in the {name} profile do not match the results"
+                )
+
+            local_government = profile.get("local_government", {})
+            blocks = local_government.get("blocks", [])
+            taluks = profile.get("taluks", [])
+            towns = profile.get("towns", [])
+            profile["assembly_seats"] = [
+                {"ac_no": ac_no, "name": rows[ac_no]["name"]} for ac_no in seat_numbers
+            ]
+            profile["counts"] = {
+                "revenue_divisions": len(profile.get("revenue_divisions", [])),
+                "taluks": len(taluks),
+                "villages": sum(len(taluk["villages"]) for taluk in taluks),
+                "blocks": len(blocks),
+                "gram_panchayats": sum(len(block["gram_panchayats"]) for block in blocks),
+                "municipalities": len(local_government.get("municipalities", [])),
+                "municipal_corporations": len(
+                    local_government.get("municipal_corporations", [])
+                ),
+                "towns": len(towns),
+                "census_towns": sum(1 for town in towns if town["status"] == "Census town"),
+                "assembly_seats": len(seat_numbers),
+                "parliamentary_seats": len(profile.get("parliamentary_seats", [])),
+            }
 
     def _build_meta(self) -> dict:
         years = []

@@ -1,0 +1,1236 @@
+{
+  "Thrissur": {
+    "district": "Thrissur",
+    "retrieved": "2026-10-25",
+    "summary": "Central Kerala district on the Arabian Sea, known as the state's cultural capital. It is the fourth-largest district by area and the most urbanised after Ernakulam.",
+    "demographics": {
+      "area_km2": 3032,
+      "population": 3121200,
+      "population_year": 2011,
+      "density_per_km2": 1026,
+      "literacy_rate": 95.32,
+      "sex_ratio": 1107,
+      "urban_share": 67.17
+    },
+    "revenue_divisions": [
+      {
+        "name": "Thrissur",
+        "taluks": [
+          "Thrissur",
+          "Chavakkad",
+          "Talappilly",
+          "Kunnamkulam"
+        ]
+      },
+      {
+        "name": "Irinjalakuda",
+        "taluks": [
+          "Mukundapuram",
+          "Chalakudy",
+          "Kodungallur"
+        ]
+      }
+    ],
+    "taluks": [
+      {
+        "name": "Kodungallur",
+        "headquarters": "Kodungallur",
+        "villages": [
+          "Edathiruthy",
+          "Pappinivattom",
+          "Koolimuttam",
+          "Kaipamangalam",
+          "Perinjanam",
+          "Padinjare Vemballur",
+          "Aala",
+          "Panangad",
+          "Azhikode",
+          "Eriyad",
+          "Pullut",
+          "Lokamaleswaram",
+          "Poyya",
+          "Pallipuram",
+          "Madathumpady",
+          "Methala",
+          "Edavilangu",
+          "Chendrapinni"
+        ]
+      },
+      {
+        "name": "Mukundapuram",
+        "headquarters": "Irinjalakuda",
+        "villages": [
+          "Irinjalakuda",
+          "Porathisseri",
+          "Vallivattom",
+          "Kaduppassery",
+          "Kattur",
+          "Edathirinji",
+          "Kottanellur",
+          "Kaaralam",
+          "Vadakkumkara",
+          "Pullur",
+          "Thekkumkara",
+          "Manavalassery",
+          "Nellai",
+          "Parappukara",
+          "Amballur",
+          "Kallur",
+          "Trikkur",
+          "Thoravu",
+          "Nenmanikkara",
+          "Madayikkonam",
+          "Chengalur",
+          "Muriyad",
+          "Thottippal",
+          "Poomangalam",
+          "Karumathra",
+          "Vellukkara",
+          "Puthenchira",
+          "Padiyur",
+          "Anandapuram"
+        ]
+      },
+      {
+        "name": "Talappilly",
+        "headquarters": "Wadakkanchery",
+        "villages": [
+          "Kaniyarkode",
+          "Pampady",
+          "Thiruvilwamala",
+          "Elanad",
+          "Vennur",
+          "Vadakkethara",
+          "Pazhayanur",
+          "Kondaazhy",
+          "Maayannur",
+          "Chelakkara",
+          "Thonnurkara",
+          "Pulakode",
+          "Kurumala",
+          "Pangarappilly",
+          "Kumaranellur",
+          "Kanjirakkode",
+          "Wadakkanchery",
+          "Parlikad",
+          "Desamangalam",
+          "Pallur",
+          "Panjal",
+          "Paimkulam",
+          "Venganellur",
+          "Killimangalam",
+          "Cheruthuruthy",
+          "Nedumpura",
+          "Varavoor",
+          "Pilakkode",
+          "Thekkumkara",
+          "Manalithara",
+          "Mullurkara",
+          "Attur",
+          "Enkakkad",
+          "Karumathra",
+          "Viruppakka",
+          "Mundathikode",
+          "Puthuruthy",
+          "Peringandoor",
+          "Minalur",
+          "Arangottukara",
+          "Thalassery",
+          "Thichur",
+          "Kottapuram",
+          "Chittanda",
+          "Chelakkode"
+        ]
+      },
+      {
+        "name": "Thrissur",
+        "headquarters": "Thrissur",
+        "villages": [
+          "Anjur",
+          "Thangaloor",
+          "Kaiparambu",
+          "Avannur",
+          "Velappaya",
+          "Chulissery",
+          "Peramangalam",
+          "Chittilappilly",
+          "Tholur",
+          "Chalakkal",
+          "Puzhakkal",
+          "Puranattukara",
+          "Kuttoor",
+          "Pottore",
+          "Kolazhy",
+          "Adat",
+          "Viyyur",
+          "Ollukkara",
+          "Nettissery",
+          "Madakkathara",
+          "Kurichikkara",
+          "Pananchery",
+          "Ayyanthole",
+          "Punkunnam",
+          "Peechi",
+          "Nadathara",
+          "Thrissur",
+          "Aranattukara",
+          "Pullazhi",
+          "Kanimangalam",
+          "Chembukavu",
+          "Chiyyaram",
+          "Oorakam",
+          "Cherpu",
+          "Chevvur",
+          "Vallachira",
+          "Paralam",
+          "Pallippuram",
+          "Kodannur",
+          "Puthur",
+          "Mannamangalam",
+          "Palissery",
+          "Avanissery",
+          "Ollur",
+          "Parakkad",
+          "Eravu",
+          "Manalur",
+          "Karamukk",
+          "Anthikad",
+          "Pullu",
+          "Padiyam",
+          "Chazhoor",
+          "Thanniyam",
+          "Vadakkummuri",
+          "Kizhakkummuri",
+          "Kurunpilavu",
+          "Inchamudi",
+          "Manakkodi",
+          "Veluthur",
+          "Peringavu",
+          "Killannur",
+          "Edakkalathur",
+          "Vilvattom",
+          "Vellanikkara",
+          "Mulayam",
+          "Kainoor",
+          "Kozhukully",
+          "Koorkkanchery",
+          "Marathakkara",
+          "Edakkunni",
+          "Venginissery",
+          "Alappad",
+          "Arattupuzha",
+          "Kizhuppillikkara"
+        ]
+      },
+      {
+        "name": "Chavakkad",
+        "headquarters": "Chavakkad",
+        "villages": [
+          "Punnayurkulam",
+          "Kadikkad",
+          "Punnayur",
+          "Vadakkekad",
+          "Vylathur",
+          "Pookode",
+          "Perakam",
+          "Guruvayur",
+          "Iringapram",
+          "Manathala",
+          "Elavally",
+          "Brahmakulam",
+          "Thaikkad",
+          "Nattika",
+          "Valappad",
+          "Mullassery",
+          "Annakara",
+          "Venkidangu",
+          "Kundaliyur",
+          "Irimbranellur",
+          "Engandiyur",
+          "Vadanappilly",
+          "Orumanayoor",
+          "Pavaratty",
+          "Venmanad",
+          "Chavakkad",
+          "Talikulam",
+          "Edakkazhiyur",
+          "Kadappuram"
+        ]
+      },
+      {
+        "name": "Chalakudy",
+        "headquarters": "Chalakudy",
+        "villages": [
+          "Alathur",
+          "Alur",
+          "Annallur",
+          "Athirappilly",
+          "Elinjipra",
+          "Kakulissery",
+          "Kalletumkkara",
+          "Kallur Thekkumuri",
+          "Kallur Vadakkumuri",
+          "Kuruvilasseri",
+          "Kizhake Chalakkudy",
+          "Kizhakkumuri",
+          "Kodakara",
+          "Kodasseri",
+          "Kuttichira",
+          "Mattathur",
+          "Melur",
+          "Mupliyam",
+          "Murigoor Thekkummuri",
+          "Murigoor Vadakkummuri",
+          "Nadipulam",
+          "Padijare Chalakkudy",
+          "Pariyaram",
+          "Perambra",
+          "Potta",
+          "Thazhekode",
+          "Thirumukkulam",
+          "Vadakkumbhagam",
+          "Vadama",
+          "Varantharappilli",
+          "Vellikulangara"
+        ]
+      },
+      {
+        "name": "Kunnamkulam",
+        "headquarters": "Kunnamkulam",
+        "villages": [
+          "Velur",
+          "Thayyur",
+          "Kiralur",
+          "Nelluvai",
+          "Kariyannur",
+          "Kadangode",
+          "Chiramanangad",
+          "Vellarakkad",
+          "Eyyal",
+          "Chiranellur",
+          "Pazhanji",
+          "Kattakampal",
+          "Karikkad",
+          "Perumpilavu",
+          "Kadavallur",
+          "Porkulam",
+          "Mangad",
+          "Akathiyoor",
+          "Kunnamkulam",
+          "Arthat",
+          "Aaloor",
+          "Kandanissery",
+          "Choondal",
+          "Chowannur",
+          "Chemmanthitta",
+          "Vellattanjur",
+          "Anjur",
+          "Kanipayyoor",
+          "Eranellur"
+        ]
+      }
+    ],
+    "local_government": {
+      "district_panchayat": "Thrissur",
+      "blocks": [
+        {
+          "name": "Anthikad",
+          "gram_panchayats": [
+            "Anthikad",
+            "Arimpur",
+            "Chazhur",
+            "Manalur",
+            "Thanniyam"
+          ]
+        },
+        {
+          "name": "Chalakudy",
+          "gram_panchayats": [
+            "Athirappilly",
+            "Kadukutty",
+            "Kodassery",
+            "Koratty",
+            "Meloor",
+            "Pariyaram"
+          ]
+        },
+        {
+          "name": "Chavakkad",
+          "gram_panchayats": [
+            "Kadappuram",
+            "Orumanayur",
+            "Punnayur",
+            "Punnayurkulam",
+            "Vadakkekkad"
+          ]
+        },
+        {
+          "name": "Cherpu",
+          "gram_panchayats": [
+            "Avinissery",
+            "Cherpu",
+            "Paralam",
+            "Vallachira"
+          ]
+        },
+        {
+          "name": "Chowannur",
+          "gram_panchayats": [
+            "Choondal",
+            "Chowannur",
+            "Kadangode",
+            "Kadavallur",
+            "Kandanassery",
+            "Kattakampal",
+            "Porkulam",
+            "Velur"
+          ]
+        },
+        {
+          "name": "Irinjalakuda",
+          "gram_panchayats": [
+            "Karalam",
+            "Kattoor",
+            "Muriyad",
+            "Parappukkara"
+          ]
+        },
+        {
+          "name": "Kodakara",
+          "gram_panchayats": [
+            "Alagappanagar",
+            "Kodakara",
+            "Mattathur",
+            "Nenmanikkara",
+            "Pudukad",
+            "Thrikkur",
+            "Varandarappilly"
+          ]
+        },
+        {
+          "name": "Mala",
+          "gram_panchayats": [
+            "Aloor",
+            "Annamanada",
+            "Kuzhur",
+            "Mala",
+            "Poyya"
+          ]
+        },
+        {
+          "name": "Mathilakam",
+          "gram_panchayats": [
+            "Edathiruthy",
+            "Edavilangu",
+            "Eriyad",
+            "Kaipamangalam",
+            "Mathilakam",
+            "Perinjanam",
+            "Sreenarayanapuram"
+          ]
+        },
+        {
+          "name": "Mullassery",
+          "gram_panchayats": [
+            "Elavally",
+            "Mullassery",
+            "Pavaratty",
+            "Venkitangu"
+          ]
+        },
+        {
+          "name": "Ollukkara",
+          "gram_panchayats": [
+            "Madakkathara",
+            "Nadathara",
+            "Pananchery",
+            "Puthur"
+          ]
+        },
+        {
+          "name": "Pazhayannur",
+          "gram_panchayats": [
+            "Chelakkara",
+            "Kondazhy",
+            "Panjal",
+            "Pazhayannur",
+            "Thiruvilwamala",
+            "Vallathol Nagar"
+          ]
+        },
+        {
+          "name": "Puzhakkal",
+          "gram_panchayats": [
+            "Adat",
+            "Avanur",
+            "Kaiparambu",
+            "Kolazhy",
+            "Mulakunnathukavu",
+            "Tholur"
+          ]
+        },
+        {
+          "name": "Thalikulam",
+          "gram_panchayats": [
+            "Engandiyur",
+            "Nattika",
+            "Thalikulam",
+            "Valapad",
+            "Vatanapally"
+          ]
+        },
+        {
+          "name": "Vellangallur",
+          "gram_panchayats": [
+            "Padiyur",
+            "Poomangalam",
+            "Puthenchira",
+            "Vellangallur",
+            "Velukara"
+          ]
+        },
+        {
+          "name": "Wadakkanchery",
+          "gram_panchayats": [
+            "Desamangalam",
+            "Erumapetty",
+            "Mullurkara",
+            "Thekkumkara",
+            "Varavoor"
+          ]
+        }
+      ],
+      "municipalities": [
+        "Chalakudy",
+        "Chavakkad",
+        "Guruvayur",
+        "Irinjalakuda",
+        "Kodungallur",
+        "Kunnamkulam",
+        "Wadakkanchery"
+      ],
+      "municipal_corporations": [
+        "Thrissur"
+      ]
+    },
+    "towns": [
+      {
+        "name": "Adat",
+        "population_2011": 5721,
+        "status": "Census town"
+      },
+      {
+        "name": "Akathiyoor",
+        "population_2011": 5847,
+        "status": "Census town"
+      },
+      {
+        "name": "Ala",
+        "population_2011": 10493,
+        "status": "Census town"
+      },
+      {
+        "name": "Alur",
+        "population_2011": 9807,
+        "status": "Census town"
+      },
+      {
+        "name": "Amballur",
+        "population_2011": 29341,
+        "status": "Census town"
+      },
+      {
+        "name": "Anjur",
+        "population_2011": 10860,
+        "status": "Census town"
+      },
+      {
+        "name": "Anthicad",
+        "population_2011": 9826,
+        "status": "Census town"
+      },
+      {
+        "name": "Avanur",
+        "population_2011": 7879,
+        "status": "Census town"
+      },
+      {
+        "name": "Avinissery",
+        "population_2011": 13983,
+        "status": "Census town"
+      },
+      {
+        "name": "Brahmakulam",
+        "population_2011": 14390,
+        "status": "Census town"
+      },
+      {
+        "name": "Chalakudy",
+        "population_2011": 49525,
+        "status": "Municipality"
+      },
+      {
+        "name": "Chavakkad",
+        "population_2011": 39098,
+        "status": "Municipality"
+      },
+      {
+        "name": "Chelakkara",
+        "population_2011": 7528,
+        "status": "Census town"
+      },
+      {
+        "name": "Chendrappini",
+        "population_2011": 16404,
+        "status": "Census town"
+      },
+      {
+        "name": "Cherpu",
+        "population_2011": 7864,
+        "status": "Census town"
+      },
+      {
+        "name": "Cheruthuruthi",
+        "population_2011": 13828,
+        "status": "Census town"
+      },
+      {
+        "name": "Chevvoor",
+        "population_2011": 16086,
+        "status": "Census town"
+      },
+      {
+        "name": "Chiramanangad",
+        "population_2011": 11060,
+        "status": "Census town"
+      },
+      {
+        "name": "Chiranellur",
+        "population_2011": 9789,
+        "status": "Census town"
+      },
+      {
+        "name": "Chittanda",
+        "population_2011": 5936,
+        "status": "Census town"
+      },
+      {
+        "name": "Chittilappilly",
+        "population_2011": 6988,
+        "status": "Census town"
+      },
+      {
+        "name": "Choolissery",
+        "population_2011": 5441,
+        "status": "Census town"
+      },
+      {
+        "name": "Choondal",
+        "population_2011": 12502,
+        "status": "Census town"
+      },
+      {
+        "name": "Desamangalam",
+        "population_2011": 8355,
+        "status": "Census town"
+      },
+      {
+        "name": "Edakkalathur",
+        "population_2011": 8039,
+        "status": "Census town"
+      },
+      {
+        "name": "Edakkazhiyur",
+        "population_2011": 17335,
+        "status": "Census town"
+      },
+      {
+        "name": "Edathirinji",
+        "population_2011": 9849,
+        "status": "Census town"
+      },
+      {
+        "name": "Edathiruthy",
+        "population_2011": 12921,
+        "status": "Census town"
+      },
+      {
+        "name": "Edavilangu",
+        "population_2011": 20363,
+        "status": "Census town"
+      },
+      {
+        "name": "Elavally",
+        "population_2011": 12819,
+        "status": "Census town"
+      },
+      {
+        "name": "Enkakkad",
+        "population_2011": 9584,
+        "status": "Census town"
+      },
+      {
+        "name": "Eranellur",
+        "population_2011": 10145,
+        "status": "Census town"
+      },
+      {
+        "name": "Eravu",
+        "population_2011": 4447,
+        "status": "Census town"
+      },
+      {
+        "name": "Eyyal",
+        "population_2011": 6727,
+        "status": "Census town"
+      },
+      {
+        "name": "Guruvayur",
+        "population_2011": 20510,
+        "status": "Municipality"
+      },
+      {
+        "name": "Iringaprom",
+        "population_2011": 12343,
+        "status": "Census town"
+      },
+      {
+        "name": "Irinjalakuda",
+        "population_2011": 28741,
+        "status": "Municipality"
+      },
+      {
+        "name": "Kadavallur",
+        "population_2011": 12912,
+        "status": "Census town"
+      },
+      {
+        "name": "Kadikkad",
+        "population_2011": 19147,
+        "status": "Census town"
+      },
+      {
+        "name": "Kainoor",
+        "population_2011": 7344,
+        "status": "Census town"
+      },
+      {
+        "name": "Kaipamangalam",
+        "population_2011": 35626,
+        "status": "Census town"
+      },
+      {
+        "name": "Kaiparamba",
+        "population_2011": 7179,
+        "status": "Census town"
+      },
+      {
+        "name": "Kallettumkara",
+        "population_2011": 7097,
+        "status": "Census town"
+      },
+      {
+        "name": "Kallur Thekkummuri",
+        "population_2011": 17480,
+        "status": "Census town"
+      },
+      {
+        "name": "Kallur Vadakkummuri",
+        "population_2011": 25259,
+        "status": "Census town"
+      },
+      {
+        "name": "Kandanassery",
+        "population_2011": 14645,
+        "status": "Census town"
+      },
+      {
+        "name": "Kaniyarkode",
+        "population_2011": 13236,
+        "status": "Census town"
+      },
+      {
+        "name": "Karamuck",
+        "population_2011": 15129,
+        "status": "Census town"
+      },
+      {
+        "name": "Karikkad",
+        "population_2011": 13656,
+        "status": "Census town"
+      },
+      {
+        "name": "Kariyannur",
+        "population_2011": 6363,
+        "status": "Census town"
+      },
+      {
+        "name": "Kattakampal",
+        "population_2011": 11836,
+        "status": "Census town"
+      },
+      {
+        "name": "Kattur",
+        "population_2011": 18017,
+        "status": "Census town"
+      },
+      {
+        "name": "Killannur",
+        "population_2011": 20339,
+        "status": "Census town"
+      },
+      {
+        "name": "Kizhakkummuri",
+        "population_2011": 4635,
+        "status": "Census town"
+      },
+      {
+        "name": "Kizhuppillikkara",
+        "population_2011": 5275,
+        "status": "Census town"
+      },
+      {
+        "name": "Kodannur",
+        "population_2011": 7655,
+        "status": "Census town"
+      },
+      {
+        "name": "Kodungallur",
+        "population_2011": 60190,
+        "status": "Municipality"
+      },
+      {
+        "name": "Kolazhy",
+        "population_2011": 11540,
+        "status": "Census town"
+      },
+      {
+        "name": "Koratty",
+        "population_2011": 17618,
+        "status": "Census town"
+      },
+      {
+        "name": "Kottappuram",
+        "population_2011": 6727,
+        "status": "Census town"
+      },
+      {
+        "name": "Kozhukkully",
+        "population_2011": 9918,
+        "status": "Census town"
+      },
+      {
+        "name": "Kumaranellur",
+        "population_2011": 7553,
+        "status": "Census town"
+      },
+      {
+        "name": "Kunnamkulam",
+        "population_2011": 54071,
+        "status": "Municipality"
+      },
+      {
+        "name": "Kurichikkara",
+        "population_2011": 4081,
+        "status": "Census town"
+      },
+      {
+        "name": "Kurumpilavu",
+        "population_2011": 14329,
+        "status": "Census town"
+      },
+      {
+        "name": "Kuttoor",
+        "population_2011": 12179,
+        "status": "Census town"
+      },
+      {
+        "name": "Madathumpady",
+        "population_2011": 4294,
+        "status": "Census town"
+      },
+      {
+        "name": "Madayikonam",
+        "population_2011": 14155,
+        "status": "Census town"
+      },
+      {
+        "name": "Manakkody",
+        "population_2011": 7150,
+        "status": "Census town"
+      },
+      {
+        "name": "Manalur",
+        "population_2011": 17757,
+        "status": "Census town"
+      },
+      {
+        "name": "Manavalassery",
+        "population_2011": 7364,
+        "status": "Census town"
+      },
+      {
+        "name": "Marathakkara",
+        "population_2011": 15817,
+        "status": "Census town"
+      },
+      {
+        "name": "Methala",
+        "population_2011": 37505,
+        "status": "Census town"
+      },
+      {
+        "name": "Minalur",
+        "population_2011": 6120,
+        "status": "Census town"
+      },
+      {
+        "name": "Mullassery",
+        "population_2011": 12165,
+        "status": "Census town"
+      },
+      {
+        "name": "Mundathikode",
+        "population_2011": 7672,
+        "status": "Census town"
+      },
+      {
+        "name": "Muringur Vadakkummuri",
+        "population_2011": 4981,
+        "status": "Census town"
+      },
+      {
+        "name": "Nadathara",
+        "population_2011": 11969,
+        "status": "Census town"
+      },
+      {
+        "name": "Nedumpura",
+        "population_2011": 12399,
+        "status": "Census town"
+      },
+      {
+        "name": "Nelluwaya",
+        "population_2011": 5994,
+        "status": "Census town"
+      },
+      {
+        "name": "Nenmenikkara",
+        "population_2011": 18067,
+        "status": "Census town"
+      },
+      {
+        "name": "Oorakam",
+        "population_2011": 13149,
+        "status": "Census town"
+      },
+      {
+        "name": "Orumanayur",
+        "population_2011": 14064,
+        "status": "Census town"
+      },
+      {
+        "name": "Padiyam",
+        "population_2011": 11623,
+        "status": "Census town"
+      },
+      {
+        "name": "Padiyur",
+        "population_2011": 8823,
+        "status": "Census town"
+      },
+      {
+        "name": "Palissery",
+        "population_2011": 7724,
+        "status": "Census town"
+      },
+      {
+        "name": "Pallippuram",
+        "population_2011": 7718,
+        "status": "Census town"
+      },
+      {
+        "name": "Paluvai",
+        "population_2011": 9127,
+        "status": "Census town"
+      },
+      {
+        "name": "Panangad",
+        "population_2011": 15630,
+        "status": "Census town"
+      },
+      {
+        "name": "Pappinivattom",
+        "population_2011": 15336,
+        "status": "Census town"
+      },
+      {
+        "name": "Parakkad",
+        "population_2011": 9093,
+        "status": "Census town"
+      },
+      {
+        "name": "Paralam",
+        "population_2011": 9187,
+        "status": "Census town"
+      },
+      {
+        "name": "Parappukkara",
+        "population_2011": 11893,
+        "status": "Census town"
+      },
+      {
+        "name": "Pavaratty",
+        "population_2011": 12299,
+        "status": "Census town"
+      },
+      {
+        "name": "Pazhanji",
+        "population_2011": 14067,
+        "status": "Census town"
+      },
+      {
+        "name": "Perakam",
+        "population_2011": 12072,
+        "status": "Census town"
+      },
+      {
+        "name": "Peramangalam",
+        "population_2011": 13260,
+        "status": "Census town"
+      },
+      {
+        "name": "Peringandoor",
+        "population_2011": 5577,
+        "status": "Census town"
+      },
+      {
+        "name": "Perinjanam",
+        "population_2011": 21012,
+        "status": "Census town"
+      },
+      {
+        "name": "Pookode",
+        "population_2011": 9366,
+        "status": "Census town"
+      },
+      {
+        "name": "Poomangalam",
+        "population_2011": 11141,
+        "status": "Census town"
+      },
+      {
+        "name": "Porathissery",
+        "population_2011": 16768,
+        "status": "Census town"
+      },
+      {
+        "name": "Porkulam",
+        "population_2011": 6503,
+        "status": "Census town"
+      },
+      {
+        "name": "Pottore",
+        "population_2011": 7848,
+        "status": "Census town"
+      },
+      {
+        "name": "Poyya",
+        "population_2011": 10478,
+        "status": "Census town"
+      },
+      {
+        "name": "Pullur",
+        "population_2011": 12656,
+        "status": "Census town"
+      },
+      {
+        "name": "Punnayur",
+        "population_2011": 19387,
+        "status": "Census town"
+      },
+      {
+        "name": "Punnayurkulam",
+        "population_2011": 14221,
+        "status": "Census town"
+      },
+      {
+        "name": "Puranattukara",
+        "population_2011": 10655,
+        "status": "Census town"
+      },
+      {
+        "name": "Puthukkad",
+        "population_2011": 12615,
+        "status": "Census town"
+      },
+      {
+        "name": "Puthur",
+        "population_2011": 17430,
+        "status": "Census town"
+      },
+      {
+        "name": "Puzhakkal",
+        "population_2011": 8609,
+        "status": "Census town"
+      },
+      {
+        "name": "Talikkulam",
+        "population_2011": 25507,
+        "status": "Census town"
+      },
+      {
+        "name": "Thaikkad",
+        "population_2011": 6594,
+        "status": "Census town"
+      },
+      {
+        "name": "Thangalur",
+        "population_2011": 4587,
+        "status": "Census town"
+      },
+      {
+        "name": "Thanniyam",
+        "population_2011": 9743,
+        "status": "Census town"
+      },
+      {
+        "name": "Thekkumkara",
+        "population_2011": 15258,
+        "status": "Census town"
+      },
+      {
+        "name": "Tholur",
+        "population_2011": 7454,
+        "status": "Census town"
+      },
+      {
+        "name": "Thrissur",
+        "population_2011": 315957,
+        "status": "Municipal corporation"
+      },
+      {
+        "name": "Trikkur",
+        "population_2011": 13093,
+        "status": "Census town"
+      },
+      {
+        "name": "Vadakkekad",
+        "population_2011": 15811,
+        "status": "Census town"
+      },
+      {
+        "name": "Vadakkumkara",
+        "population_2011": 10407,
+        "status": "Census town"
+      },
+      {
+        "name": "Vadakkummuri",
+        "population_2011": 9585,
+        "status": "Census town"
+      },
+      {
+        "name": "Vadama",
+        "population_2011": 11573,
+        "status": "Census town"
+      },
+      {
+        "name": "Vadanappally",
+        "population_2011": 30657,
+        "status": "Census town"
+      },
+      {
+        "name": "Vallachira",
+        "population_2011": 12970,
+        "status": "Census town"
+      },
+      {
+        "name": "Vellanikkara",
+        "population_2011": 6167,
+        "status": "Census town"
+      },
+      {
+        "name": "Vellookkara",
+        "population_2011": 8146,
+        "status": "Census town"
+      },
+      {
+        "name": "Velur",
+        "population_2011": 13928,
+        "status": "Census town"
+      },
+      {
+        "name": "Veluthur",
+        "population_2011": 11602,
+        "status": "Census town"
+      },
+      {
+        "name": "Venginissery",
+        "population_2011": 5533,
+        "status": "Census town"
+      },
+      {
+        "name": "Venkitangu",
+        "population_2011": 11335,
+        "status": "Census town"
+      },
+      {
+        "name": "Venmanad",
+        "population_2011": 8377,
+        "status": "Census town"
+      },
+      {
+        "name": "Vylathur",
+        "population_2011": 10298,
+        "status": "Census town"
+      },
+      {
+        "name": "Wadakkanchery",
+        "population_2011": 15674,
+        "status": "Municipality"
+      }
+    ],
+    "assembly_seats": [
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73
+    ],
+    "parliamentary_seats": [
+      "Thrissur",
+      "Chalakudy",
+      "Alathur"
+    ],
+    "sources": [
+      {
+        "label": "Thrissur district portal — taluks, villages, blocks and panchayats",
+        "short": "District portal",
+        "url": "https://thrissur.nic.in/en/villages-255/"
+      },
+      {
+        "label": "LSGD local-body directory — current block and gram panchayat codes",
+        "short": "LSGD directory",
+        "url": "https://lsgkerala.gov.in/en/website/web"
+      },
+      {
+        "label": "Census 2011 towns and populations",
+        "short": "Census 2011",
+        "url": "https://www.citypopulation.de/en/india/kerala/3207__thrissur/"
+      },
+      {
+        "label": "Revenue divisions, taluk headquarters and seats (Wikipedia)",
+        "short": "Wikipedia",
+        "url": "https://en.wikipedia.org/w/index.php?title=Thrissur_district&oldid=1380194348"
+      }
+    ]
+  }
+}

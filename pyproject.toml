@@ -1,7 +1,7 @@
 [project]
 name = "spark-maps"
-version = "0.2.0"
-description = "Interactive map of Kerala's districts and legislative assembly constituencies, with the winning MLA for 2021 and 2026."
+version = "0.3.0"
+description = "Interactive map of Kerala's districts and legislative assembly constituencies, with the winning MLA for 2021 and 2026 and administrative profiles for districts."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
