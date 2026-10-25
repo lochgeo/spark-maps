@@ -208,6 +208,11 @@ tempCodeRunnerFile.py
 # Ruff stuff:
 .ruff_cache/
 
+# Project generated data
+data/raw/
+data/kerala.db
+tmp/
+
 # PyPI configuration file
 .pypirc
 

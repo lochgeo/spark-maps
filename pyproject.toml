@@ -1,0 +1,36 @@
+[project]
+name = "spark-maps"
+version = "0.2.0"
+description = "Interactive map of Kerala's districts and legislative assembly constituencies, with the winning MLA for 2021 and 2026."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+]
+
+[project.optional-dependencies]
+data = [
+    "httpx>=0.27.0",
+    "lxml>=5.2.0",
+    "pandas>=2.2.0",
+    "shapely>=2.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.27.0",
+    "pytest>=8.0.0",
+    "ruff>=0.6.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

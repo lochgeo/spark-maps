@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kerala Map — Districts &amp; MLAs</title>
+  <meta name="description" content="Explore Kerala's 14 districts and 140 legislative assembly constituencies, with the winning MLA from the 2021 and 2026 elections." />
+  <meta name="theme-color" content="#070a11" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/static/css/app.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <header class="brand">
+        <div class="brand-mark">K</div>
+        <div class="brand-text">
+          <h1>Kerala<span>Map</span></h1>
+          <p>Districts &amp; legislative assembly</p>
+        </div>
+      </header>
+
+      <div class="sidebar-tools">
+        <label class="search" for="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.2-3.2"></path>
+          </svg>
+          <input id="search" type="search" placeholder="Search constituency, MLA, party…" autocomplete="off" spellcheck="false" />
+          <kbd>⌘K</kbd>
+        </label>
+      </div>
+
+      <nav class="tabs" role="tablist" aria-label="Map layers">
+        <button class="tab is-active" data-tab="constituencies" role="tab" aria-selected="true">
+          Constituencies <span class="tab-count">140</span>
+        </button>
+        <button class="tab" data-tab="districts" role="tab" aria-selected="false">
+          Districts <span class="tab-count">14</span>
+        </button>
+      </nav>
+
+      <div class="list-head">
+        <span id="list-title">All constituencies</span>
+        <span id="list-count">140</span>
+      </div>
+      <div class="list" id="list" role="list" aria-label="Constituencies"></div>
+
+      <footer class="sidebar-foot">
+        <span id="foot-year">Election results</span>
+        <button class="linkish" id="about-btn" type="button">Sources</button>
+      </footer>
+    </aside>
+
+    <div class="scrim" id="scrim"></div>
+
+    <main class="map-shell">
+      <div id="map" aria-label="Map of Kerala"></div>
+
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Open constituency list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+
+      <div class="map-controls">
+        <div class="segmented year-switch" id="years" role="group" aria-label="Election results year"></div>
+        <div class="segmented" id="basemaps" role="group" aria-label="Basemap">
+          <button type="button" data-basemap="dark" class="is-active">Dark</button>
+          <button type="button" data-basemap="light">Light</button>
+          <button type="button" data-basemap="satellite">Satellite</button>
+        </div>
+        <button class="chip" id="labels-btn" type="button" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M4 7h16M4 12h10M4 17h7"></path>
+          </svg>
+          <span class="chip-label">Labels</span>
+        </button>
+      </div>
+
+      <div class="legend" id="legend" aria-label="Seats by alliance"></div>
+
+      <section class="details" id="details" hidden aria-live="polite"></section>
+
+      <div class="hint" id="hint">Hover a constituency to see its MLA &middot; click for the full result</div>
+
+      <div class="loader" id="loader">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Loading Kerala…</p>
+      </div>
+    </main>
+  </div>
+
+  <dialog class="about" id="about">
+    <div class="about-head">
+      <div>
+        <span class="kicker">About</span>
+        <h2>Kerala Map</h2>
+      </div>
+      <form method="dialog">
+        <button class="icon-btn" aria-label="Close" type="submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </form>
+    </div>
+    <p class="about-copy">
+      An interactive atlas of Kerala's 14 districts and 140 legislative assembly
+      constituencies. Constituency colours show the alliance that won each seat in
+      the 2021 or 2026 assembly election; hover or tap a seat to meet its MLA, and
+      switch the results layer from the map controls.
+    </p>
+    <h3>Data sources</h3>
+    <ul class="source-list" id="sources"></ul>
+    <p class="fineprint">
+      Results reflect the selected general election; by-elections held afterwards
+      are not reflected in the winner shown. District headquarters are marked in
+      district view. Boundaries are simplified for the web and are indicative, not
+      survey-grade.
+    </p>
+    <p class="fineprint">Built with FastAPI, Leaflet and open data.</p>
+  </dialog>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
