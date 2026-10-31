@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pandas as pd
 from shapely import make_valid, set_precision, to_geojson
-from shapely.geometry import shape
+from shapely.geometry import Polygon, shape
 from shapely.ops import polylabel, unary_union
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -341,15 +341,70 @@ def build_boundaries(rows: list[dict]) -> None:
         build_taluk_boundaries()
 
 
-SDT_FALLBACK = {
-    "Sulthanbathery": "Sulthan Bathery",
-    "Quilandy": "Koyilandy",
-    "Ernad": "Eranad",
-    "Ottappalam": "Ottapalam",
-    "Mannarkad": "Mannarkkad",
-    "Paravur": "North Paravur",
-    "Peerumade": "Peermade",
-    "Kozhenchery": "Kozhencherry",
+SUBDISTRICT_SPLITS = {
+    ("Kasaragod", "Kasaragod"): ["Kasaragod", "Manjeshwaram"],
+    ("Kasaragod", "Hosdurg"): ["Hosdurg", "Vellarikundu"],
+    ("Kannur", "Taliparamba"): ["Taliparamba", "Payyanur"],
+    ("Kannur", "Kannur"): ["Kannur"],
+    ("Kannur", "Thalassery"): ["Thalassery", "Iritty"],
+    ("Wayanad", "Mananthavady"): ["Mananthavady"],
+    ("Wayanad", "Sulthanbathery"): ["Sulthan Bathery"],
+    ("Wayanad", "Vythiri"): ["Vythiri"],
+    ("Kozhikode", "Vadakara"): ["Vadakara"],
+    ("Kozhikode", "Quilandy"): ["Koyilandy"],
+    ("Kozhikode", "Kozhikode"): ["Kozhikode", "Thamarassery"],
+    ("Malappuram", "Ernad"): ["Eranad", "Kondotty"],
+    ("Malappuram", "Nilambur"): ["Nilambur"],
+    ("Malappuram", "Perinthalmanna"): ["Perinthalmanna"],
+    ("Malappuram", "Tirur"): ["Tirur"],
+    ("Malappuram", "Tirurangadi"): ["Tirurangadi"],
+    ("Malappuram", "Ponnani"): ["Ponnani"],
+    ("Palakkad", "Ottappalam"): ["Ottapalam", "Pattambi"],
+    ("Palakkad", "Mannarkad"): ["Mannarkkad", "Attappadi"],
+    ("Palakkad", "Palakkad"): ["Palakkad"],
+    ("Palakkad", "Chittur"): ["Chittur"],
+    ("Palakkad", "Alathur"): ["Alathur"],
+    ("Thrissur", "Talappilly"): ["Talappilly", "Kunnamkulam"],
+    ("Thrissur", "Chavakkad"): ["Chavakkad"],
+    ("Thrissur", "Thrissur"): ["Thrissur"],
+    ("Thrissur", "Kodungallur"): ["Kodungallur"],
+    ("Thrissur", "Mukundapuram"): ["Mukundapuram", "Chalakudy"],
+    ("Ernakulam", "Kunnathunad"): ["Kunnathunad"],
+    ("Ernakulam", "Aluva"): ["Aluva"],
+    ("Ernakulam", "Paravur"): ["North Paravur"],
+    ("Ernakulam", "Kochi"): ["Kochi"],
+    ("Ernakulam", "Kanayannur"): ["Kanayannur"],
+    ("Ernakulam", "Muvattupuzha"): ["Muvattupuzha"],
+    ("Ernakulam", "Kothamangalam"): ["Kothamangalam"],
+    ("Idukki", "Devikulam"): ["Devikulam"],
+    ("Idukki", "Udumbanchola"): ["Udumbanchola", "Idukki"],
+    ("Idukki", "Thodupuzha"): ["Thodupuzha", "Idukki"],
+    ("Idukki", "Peerumade"): ["Peermade"],
+    ("Kottayam", "Meenachil"): ["Meenachil"],
+    ("Kottayam", "Vaikom"): ["Vaikom"],
+    ("Kottayam", "Kottayam"): ["Kottayam"],
+    ("Kottayam", "Changanassery"): ["Changanassery"],
+    ("Kottayam", "Kanjirappally"): ["Kanjirappally"],
+    ("Alappuzha", "Cherthala"): ["Cherthala"],
+    ("Alappuzha", "Ambalappuzha"): ["Ambalappuzha"],
+    ("Alappuzha", "Kuttanad"): ["Kuttanad"],
+    ("Alappuzha", "Karthikappally"): ["Karthikappally"],
+    ("Alappuzha", "Chengannur"): ["Chengannur"],
+    ("Alappuzha", "Mavelikkara"): ["Mavelikkara"],
+    ("Pathanamthitta", "Thiruvalla"): ["Thiruvalla"],
+    ("Pathanamthitta", "Mallappally"): ["Mallappally"],
+    ("Pathanamthitta", "Ranni"): ["Ranni"],
+    ("Pathanamthitta", "Kozhenchery"): ["Kozhencherry", "Konni"],
+    ("Pathanamthitta", "Adoor"): ["Adoor"],
+    ("Kollam", "Karunagappally"): ["Karunagappally"],
+    ("Kollam", "Kunnathur"): ["Kunnathur"],
+    ("Kollam", "Pathanapuram"): ["Pathanapuram", "Punalur"],
+    ("Kollam", "Kottarakkara"): ["Kottarakkara"],
+    ("Kollam", "Kollam"): ["Kollam"],
+    ("Thiruvananthapuram", "Chirayinkeezhu"): ["Chirayinkeezhu", "Varkala"],
+    ("Thiruvananthapuram", "Nedumangad"): ["Nedumangad", "Kattakada"],
+    ("Thiruvananthapuram", "Thiruvananthapuram"): ["Thiruvananthapuram"],
+    ("Thiruvananthapuram", "Neyyattinkara"): ["Neyyattinkara", "Kattakada"],
 }
 
 
@@ -358,64 +413,140 @@ def _norm_village(text: str) -> str:
     return re.sub(r"[^a-z0-9]", "", cleaned)
 
 
+def _keep_main_exterior(geometry):
+    geometry = polygonal(make_valid(geometry))
+    if geometry.geom_type == "Polygon":
+        return Polygon(geometry.exterior)
+    parts = [part for part in geometry.geoms if part.geom_type == "Polygon"]
+    largest = max(parts, key=lambda part: part.area)
+    return Polygon(largest.exterior)
+
+
+def _clean_taluk_geometry(geometry):
+    geometry = polygonal(make_valid(geometry))
+    if geometry.geom_type == "Polygon":
+        return Polygon(geometry.exterior)
+    parts = [part for part in geometry.geoms if part.geom_type == "Polygon"]
+    max_area = max(part.area for part in parts)
+    threshold = max(0.0005, max_area * 0.15)
+    significant = [Polygon(part.exterior) for part in parts if part.area >= threshold]
+    return unary_union(significant)
+
+
 def build_taluk_boundaries() -> None:
     details = json.loads(DISTRICT_DETAILS_JSON.read_text(encoding="utf-8"))
+    subdistricts_raw = json.loads(
+        (RAW_DIR / "KERALA_SUBDISTRICTS.geojson").read_text(encoding="utf-8")
+    )
     villages_raw = json.loads(
         (RAW_DIR / "KERALA_VILLAGES.geojson").read_text(encoding="utf-8")
     )
 
-    by_district: dict[str, list[dict]] = defaultdict(list)
+    sdt_geoms: dict[tuple[str, str], object] = {}
+    for raw_feature in subdistricts_raw["features"]:
+        props = raw_feature["properties"]
+        key = (props["dtname"].strip(), props["sdtname"].strip())
+        sdt_geoms[key] = make_valid(shape(raw_feature["geometry"]))
+
+    villages_by_sdt: dict[tuple[str, str], list[dict]] = defaultdict(list)
     for raw_feature in villages_raw["features"]:
         props = raw_feature["properties"]
-        by_district[props["DTNAME"].strip().title()].append(raw_feature)
+        key = (props["DTNAME"].strip().title(), props["SDTNAME"].strip())
+        villages_by_sdt[key].append(raw_feature)
+
+    # Build village -> taluk lookup per district
+    village_lookup: dict[str, dict[str, str]] = {}
+    for district, profile in details.items():
+        vmap: dict[str, str] = {}
+        for taluk in profile.get("taluks", []):
+            for village in taluk["villages"]:
+                vmap[_norm_village(village)] = taluk["name"]
+        if district == "Idukki":
+            vmap["painavu"] = "Idukki"
+        village_lookup[district] = vmap
+
+    parts_by_taluk: dict[tuple[str, str], list] = defaultdict(list)
+    for (district, sdt_name), child_taluks in SUBDISTRICT_SPLITS.items():
+        sdt_geom = sdt_geoms[(district, sdt_name)]
+        if len(child_taluks) == 1:
+            parts_by_taluk[(district, child_taluks[0])].append(sdt_geom)
+            continue
+
+        base_taluk, carved_taluk = child_taluks[0], child_taluks[1]
+        vmap = {
+            k: v
+            for k, v in village_lookup[district].items()
+            if v in (base_taluk, carved_taluk)
+        }
+        known_keys = list(vmap.keys())
+        matched: dict[str, list] = defaultdict(list)
+        unmatched: list = []
+
+        for raw_feature in villages_by_sdt[(district, sdt_name)]:
+            props = raw_feature["properties"]
+            vname = _norm_village(
+                (props.get("VILNAME11") or "").strip() or props.get("VILNAM_SOI") or ""
+            )
+            tname = vmap.get(vname)
+            if not tname:
+                matches = difflib.get_close_matches(vname, known_keys, n=1, cutoff=0.76)
+                if matches:
+                    tname = vmap[matches[0]]
+            vgeom = make_valid(shape(raw_feature["geometry"]))
+            if tname:
+                matched[tname].append(vgeom)
+            else:
+                unmatched.append(vgeom)
+
+        carved_core = _keep_main_exterior(
+            unary_union(matched[carved_taluk]).buffer(0.002).buffer(-0.002)
+        )
+        base_core = _keep_main_exterior(
+            unary_union(matched[base_taluk]).buffer(0.002).buffer(-0.002)
+        )
+        for ugeom in unmatched:
+            if ugeom.distance(carved_core) < ugeom.distance(base_core):
+                matched[carved_taluk].append(ugeom)
+            else:
+                matched[base_taluk].append(ugeom)
+
+        carved_poly = _keep_main_exterior(
+            unary_union(matched[carved_taluk]).buffer(0.003).buffer(-0.003)
+        ).intersection(sdt_geom)
+        base_poly = sdt_geom.difference(carved_poly)
+
+        parts_by_taluk[(district, carved_taluk)].append(carved_poly)
+        parts_by_taluk[(district, base_taluk)].append(base_poly)
 
     taluk_features = []
     for district, profile in details.items():
-        village_to_taluk: dict[str, str] = {}
-        taluk_meta: dict[str, dict] = {}
-        division_by_taluk: dict[str, str] = {}
-        for division in profile.get("revenue_divisions", []):
-            for tname in division["taluks"]:
-                division_by_taluk[tname] = division["name"]
-
+        division_by_taluk = {
+            tname: division["name"]
+            for division in profile.get("revenue_divisions", [])
+            for tname in division["taluks"]
+        }
         for taluk in profile.get("taluks", []):
             tname = taluk["name"]
-            taluk_meta[tname] = {
-                "name": tname,
-                "district": district,
-                "headquarters": taluk["headquarters"],
-                "revenue_division": division_by_taluk.get(tname, ""),
-                "village_count": len(taluk["villages"]),
-            }
-            for village in taluk["villages"]:
-                village_to_taluk[_norm_village(village)] = tname
-
-        valid_taluks = set(taluk_meta)
-        geoms_by_taluk: dict[str, list] = defaultdict(list)
-        known_keys = list(village_to_taluk.keys())
-
-        for raw_feature in by_district[district]:
-            props = raw_feature["properties"]
-            vname = _norm_village(props.get("VILNAME11") or props.get("VILNAM_SOI") or "")
-            tname = village_to_taluk.get(vname)
-            if not tname:
-                matches = difflib.get_close_matches(vname, known_keys, n=1, cutoff=0.72)
-                if matches:
-                    tname = village_to_taluk[matches[0]]
-            if not tname:
-                sdt = props.get("SDTNAME", "").strip()
-                sdt = SDT_FALLBACK.get(sdt, sdt)
-                tname = sdt if sdt in valid_taluks else profile["taluks"][0]["name"]
-            geoms_by_taluk[tname].append(make_valid(shape(raw_feature["geometry"])))
-
-        for taluk in profile.get("taluks", []):
-            tname = taluk["name"]
-            parts = geoms_by_taluk.get(tname)
+            parts = parts_by_taluk.get((district, tname))
             if not parts:
-                raise SystemExit(f"No village polygons matched for taluk {tname} ({district})")
-            merged = unary_union(parts).buffer(0.0003).buffer(-0.0003)
+                raise SystemExit(f"No geometry built for taluk {tname} ({district})")
+            buf = 0.004 if len(parts) > 1 else 0.0005
+            merged = _clean_taluk_geometry(
+                unary_union(parts).buffer(buf).buffer(-buf)
+            )
             geometry = prepare(merged, DISTRICT_SIMPLIFY)
-            taluk_features.append(feature(geometry, taluk_meta[tname]))
+            taluk_features.append(
+                feature(
+                    geometry,
+                    {
+                        "name": tname,
+                        "district": district,
+                        "headquarters": taluk["headquarters"],
+                        "revenue_division": division_by_taluk.get(tname, ""),
+                        "village_count": len(taluk["villages"]),
+                    },
+                )
+            )
 
     write_geojson(PROCESSED_DIR / "kerala_taluks.geojson", taluk_features)
 

@@ -285,6 +285,7 @@ def test_taluks_geojson(client: TestClient) -> None:
     assert response.status_code == 200
     features = response.json()["features"]
     assert len(features) == 78
+    assert all(f["geometry"]["type"] == "Polygon" for f in features)
     thrissur_taluks = {
         f["properties"]["name"]
         for f in features
