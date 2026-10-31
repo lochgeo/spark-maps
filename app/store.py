@@ -2,12 +2,19 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
 from .config import DISTRICT_DETAILS_JSON
 from .db import fetch_headquarters, fetch_results
+from .schemas import DistrictProfile
+
+
+def _etag(payload: str) -> str:
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+    return f'W/"{digest}"'
 
 ALLIANCE_ORDER = ("LDF", "UDF", "NDA")
 
@@ -51,6 +58,9 @@ class DataStore:
         self.constituencies_geojson: dict[int, str] = {}
         self.districts_geojson: dict[int, str] = {}
         self.state_geojson: str = "{}"
+        self.constituencies_etag: dict[int, str] = {}
+        self.districts_etag: dict[int, str] = {}
+        self.state_etag: str = ""
 
     def load(self, db_path: Path, processed_dir: Path) -> None:
         rows = fetch_results(db_path)
@@ -79,13 +89,20 @@ class DataStore:
         self._enrich_district_details()
         self.meta = self._build_meta()
         for year in self.years:
-            self.constituencies_geojson[year] = self._build_constituency_geojson(
+            ac_payload = self._build_constituency_geojson(
                 processed_dir / "kerala_assembly.geojson", year
             )
-            self.districts_geojson[year] = self._build_district_geojson(
+            self.constituencies_geojson[year] = ac_payload
+            self.constituencies_etag[year] = _etag(ac_payload)
+
+            dist_payload = self._build_district_geojson(
                 processed_dir / "kerala_districts.geojson", year
             )
+            self.districts_geojson[year] = dist_payload
+            self.districts_etag[year] = _etag(dist_payload)
+
         self.state_geojson = (processed_dir / "kerala_state.geojson").read_text(encoding="utf-8")
+        self.state_etag = _etag(self.state_geojson)
 
     def _summarise_districts(
         self, rows: list[dict], hq_by_district: dict[str, dict]
@@ -204,6 +221,7 @@ class DataStore:
                 "assembly_seats": len(seat_numbers),
                 "parliamentary_seats": len(profile.get("parliamentary_seats", [])),
             }
+            DistrictProfile.model_validate(profile)
 
     def _build_meta(self) -> dict:
         years = []
@@ -242,14 +260,19 @@ class DataStore:
 
         features = []
         for feature in source["features"]:
-            ac_no = int(feature["properties"]["ac_no"])
+            props = feature["properties"]
+            ac_no = int(props["ac_no"])
             row = by_ac.get(ac_no)
             if row is None:
                 raise RuntimeError(f"Boundary for constituency {ac_no} has no {year} result")
+            merged = dict(row)
+            if "label_lat" in props and "label_lng" in props:
+                merged["label_lat"] = props["label_lat"]
+                merged["label_lng"] = props["label_lng"]
             features.append(
                 {
                     "type": "Feature",
-                    "properties": row,
+                    "properties": merged,
                     "geometry": feature["geometry"],
                 }
             )
@@ -265,14 +288,19 @@ class DataStore:
 
         features = []
         for feature in source["features"]:
-            name = feature["properties"]["name"]
+            props = feature["properties"]
+            name = props["name"]
             summary = summaries.get(name)
             if summary is None:
                 raise RuntimeError(f"Boundary for district {name!r} has no matching results")
+            merged = dict(summary)
+            if "label_lat" in props and "label_lng" in props:
+                merged["label_lat"] = props["label_lat"]
+                merged["label_lng"] = props["label_lng"]
             features.append(
                 {
                     "type": "Feature",
-                    "properties": summary,
+                    "properties": merged,
                     "geometry": feature["geometry"],
                 }
             )

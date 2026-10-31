@@ -8,6 +8,7 @@ whenever the source files are newer or the schema version changes.
 from __future__ import annotations
 
 import csv
+import os
 import sqlite3
 from pathlib import Path
 
@@ -121,35 +122,39 @@ def _schema_version(conn: sqlite3.Connection) -> str | None:
     return row["value"] if row else None
 
 
+def _database_is_current(db_path: Path, newest_csv: float) -> bool:
+    if not db_path.exists() or db_path.stat().st_mtime < newest_csv:
+        return False
+    conn = connect(db_path)
+    try:
+        if _schema_version(conn) != SCHEMA_VERSION:
+            return False
+        count = conn.execute("SELECT COUNT(*) FROM results").fetchone()[0]
+        return count > 0
+    except sqlite3.OperationalError:
+        return False
+    finally:
+        conn.close()
+
+
 def ensure_database(db_path: Path, results_csv: Path, hq_csv: Path) -> None:
-    """Create or refresh the SQLite database from the source CSVs."""
+    """Create or refresh the SQLite database from the source CSVs atomically."""
     for path in (results_csv, hq_csv):
         if not path.exists():
             raise FileNotFoundError(f"Data file not found: {path}")
 
     db_path.parent.mkdir(parents=True, exist_ok=True)
-
     newest_csv = max(results_csv.stat().st_mtime, hq_csv.stat().st_mtime)
-    rebuild = not db_path.exists() or db_path.stat().st_mtime < newest_csv
+    if _database_is_current(db_path, newest_csv):
+        return
 
-    conn = connect(db_path)
+    tmp_path = db_path.with_name(f"{db_path.name}.tmp.{os.getpid()}")
+    tmp_path.unlink(missing_ok=True)
+    conn = connect(tmp_path)
     try:
-        if not rebuild and _schema_version(conn) != SCHEMA_VERSION:
-            rebuild = True
-        if rebuild:
-            conn.executescript(
-                "DROP TABLE IF EXISTS results;"
-                "DROP TABLE IF EXISTS district_hqs;"
-                "DROP TABLE IF EXISTS meta;"
-            )
         conn.executescript(SCHEMA)
-        count = conn.execute("SELECT COUNT(*) FROM results").fetchone()[0]
-        if rebuild or count == 0:
-            if count:
-                conn.execute("DELETE FROM results")
-            conn.execute("DELETE FROM district_hqs")
-            _seed_results(conn, results_csv)
-            _seed_headquarters(conn, hq_csv)
+        _seed_results(conn, results_csv)
+        _seed_headquarters(conn, hq_csv)
         conn.execute(
             "INSERT OR REPLACE INTO meta (key, value) VALUES ('schema_version', ?)",
             (SCHEMA_VERSION,),
@@ -157,6 +162,30 @@ def ensure_database(db_path: Path, results_csv: Path, hq_csv: Path) -> None:
         conn.commit()
     finally:
         conn.close()
+
+    try:
+        os.replace(tmp_path, db_path)
+    except PermissionError:
+        # On Windows, if another process has db_path open, fall back to in-place update
+        tmp_path.unlink(missing_ok=True)
+        if not _database_is_current(db_path, newest_csv):
+            conn = connect(db_path)
+            try:
+                conn.executescript(
+                    "DROP TABLE IF EXISTS results;"
+                    "DROP TABLE IF EXISTS district_hqs;"
+                    "DROP TABLE IF EXISTS meta;"
+                )
+                conn.executescript(SCHEMA)
+                _seed_results(conn, results_csv)
+                _seed_headquarters(conn, hq_csv)
+                conn.execute(
+                    "INSERT OR REPLACE INTO meta (key, value) VALUES ('schema_version', ?)",
+                    (SCHEMA_VERSION,),
+                )
+                conn.commit()
+            finally:
+                conn.close()
 
 
 def fetch_results(db_path: Path) -> list[dict]:

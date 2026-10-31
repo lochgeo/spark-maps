@@ -20,7 +20,7 @@ ac_no,name,district,winner,party,alliance,votes,vote_share,runner_up,runner_up_p
 19,Kalpetta,Wayanad,T. Siddique,INC,UDF,70252,46.15,M. V. Shreyams Kumar,LJD,5470,2021
 20,Vadakara,Kozhikode,K. K. Rema,RMPI,UDF,65093,47.63,Manayath Chandran,LJD,7491,2021
 21,Kuttiady,Kozhikode,K. P. Kunhammadkutty,CPI(M),LDF,80143,47.2,Parakkal Abdulla,IUML,333,2021
-22,Nadapuram,Kozhikode,E. K. Vijayan,CPI,LDF,83293,47.46,K.Praveen Kumar,INC,4035,2021
+22,Nadapuram,Kozhikode,E. K. Vijayan,CPI,LDF,83293,47.46,K. Praveen Kumar,INC,4035,2021
 23,Koyilandy,Kozhikode,Kanathil Jameela,CPI(M),LDF,75628,46.66,N. Subramanian,INC,8472,2021
 24,Perambra,Kozhikode,T. P. Ramakrishnan,CPI(M),LDF,86023,52.54,C. H. Ibrahimkutty,IND,22592,2021
 25,Balussery (SC),Kozhikode,K. M. Sachin Dev,CPI(M),LDF,91839,50.47,Dharmajan Bolgatty,INC,20372,2021
@@ -131,7 +131,7 @@ ac_no,name,district,winner,party,alliance,votes,vote_share,runner_up,runner_up_p
 130,Nedumangad,Thiruvananthapuram,G. R. Anil,CPI,LDF,72742,47.54,P. S. Prasanth,INC,23309,2021
 131,Vamanapuram,Thiruvananthapuram,D. K. Murali,CPI(M),LDF,73137,49.91,Anad Jayan,INC,10242,2021
 132,Kazhakootam,Thiruvananthapuram,Kadakampally Surendran,CPI(M),LDF,63690,46.04,Sobha Surendran,BJP,23497,2021
-133,Vattiyoorkavu,Thiruvananthapuram,V. K. Prasanth,CPI(M),LDF,61111,41.44,V.V. Rajesh,BJP,21515,2021
+133,Vattiyoorkavu,Thiruvananthapuram,V. K. Prasanth,CPI(M),LDF,61111,41.44,V. V. Rajesh,BJP,21515,2021
 134,Thiruvananthapuram,Thiruvananthapuram,Antony Raju,JKC,LDF,48748,38.01,V. S. Sivakumar,INC,7089,2021
 135,Nemom,Thiruvananthapuram,V. Sivankutty,CPI(M),LDF,55837,38.24,Kummanam Rajasekharan,BJP,3949,2021
 136,Aruvikkara,Thiruvananthapuram,G. Stephen,CPI(M),LDF,66776,45.83,K. S. Sabarinathan,INC,5046,2021
@@ -149,7 +149,7 @@ ac_no,name,district,winner,party,alliance,votes,vote_share,runner_up,runner_up_p
 8,Taliparamba,Kannur,T K Govindan Master,IND,UDF,91339,47.53,P K Shyamala,CPI(M),12551,2026
 9,Irikkur,Kannur,Sajeev Joseph,INC,UDF,90895,59.94,Mathew Kunnappally,KC(M),42426,2026
 10,Azhikode,Kannur,K. V. Sumesh,CPI(M),LDF,64951,43.76,Kareem Cheleri,IUML,349,2026
-11,Kannur,Kannur,T.O Mohanan,INC,UDF,70620,50.26,K. Ramachandran,C(S),18551,2026
+11,Kannur,Kannur,T. O. Mohanan,INC,UDF,70620,50.26,K. Ramachandran,C(S),18551,2026
 12,Dharmadam,Kannur,Pinarayi Vijayan,CPI(M),LDF,85614,49.87,Abdul Rasheed,INC,19247,2026
 13,Thalassery,Kannur,Karayi Rajan,CPI(M),LDF,69743,48.34,K. P. Saju,INC,20523,2026
 14,Kuthuparamba,Kannur,P. K. Praveen,RJD,LDF,70448,42.9,Jayanthi Rajan,IUML,1286,2026
@@ -160,18 +160,18 @@ ac_no,name,district,winner,party,alliance,votes,vote_share,runner_up,runner_up_p
 19,Kalpetta,Wayanad,T. Siddique,INC,UDF,97379,56.15,P K Anil Kumar,CPI(M),45031,2026
 20,Vadakara,Kozhikode,K. K. Rema,RMPI,UDF,70117,48.97,M K Bhaskaran,RJD,14862,2026
 21,Kuttiady,Kozhikode,Parakkal Abdulla,IUML,UDF,88197,49.52,K. P. Kunhammadkutty,CPI(M),10922,2026
-22,Nadapuram,Kozhikode,K. M. Abhijith,INC,UDF,99763,52.87,P.Vasantham,CPI,23600,2026
+22,Nadapuram,Kozhikode,K. M. Abhijith,INC,UDF,99763,52.87,P. Vasantham,CPI,23600,2026
 23,Koyilandy,Kozhikode,K. Praveen Kumar,INC,UDF,79913,46.35,K. Dasan,CPI(M),12070,2026
 24,Perambra,Kozhikode,Fathima Thahiliya,IUML,UDF,81429,47.32,T. P. Ramakrishnan,CPI(M),5087,2026
-25,Balussery (SC),Kozhikode,V. T. Sooraj,INC,UDF,94804,49.55,K.M. Sachindev,CPI(M),16980,2026
+25,Balussery (SC),Kozhikode,V. T. Sooraj,INC,UDF,94804,49.55,K. M. Sachindev,CPI(M),16980,2026
 26,Elathur,Kozhikode,Vidya Balakrishnan,INC,UDF,77662,43.69,A. K. Saseendran,NCP(SP),12162,2026
-27,Kozhikode North,Kozhikode,K.Jayanth,INC,UDF,50636,35.78,Thottathil Raveendran,CPI(M),1483,2026
+27,Kozhikode North,Kozhikode,K. Jayanth,INC,UDF,50636,35.78,Thottathil Raveendran,CPI(M),1483,2026
 28,Kozhikode South,Kozhikode,Fyzal Babu,IUML,UDF,52680,41.2,Ahamed Devarkovil,INL,10795,2026
 29,Beypore,Kozhikode,P. A. Mohammed Riyas,CPI(M),LDF,81849,44.21,P. V. Anvar,IND,7487,2026
 30,Kunnamangalam,Kozhikode,M. A. Razak Master,IUML,UDF,91598,43.84,P. T. A. Rahim,IND,13313,2026
 31,Koduvally,Kozhikode,P. K. Firos,IUML,UDF,95164,57.33,Saleem Madavoor,IND,36682,2026
 32,Thiruvambady,Kozhikode,C. K. Kasim,IUML,UDF,77140,51.04,Linto Joseph,CPI(M),6741,2026
-33,Kondotty,Malappuram,T. P Ashrafali,IUML,UDF,114997,60.01,P. Jiji,CPI(M),56017,2026
+33,Kondotty,Malappuram,T. P. Ashrafali,IUML,UDF,114997,60.01,P. Jiji,CPI(M),56017,2026
 34,Eranad,Malappuram,P. K. Basheer,IUML,UDF,98547,58.42,Shafeer Kizhisseri,CPI(M),41289,2026
 35,Nilambur,Malappuram,Aryadan Shoukath,INC,UDF,113586,62.69,U. Sharafali,IND,54851,2026
 36,Wandoor (SC),Malappuram,A. P. Anil Kumar,INC,UDF,121074,59.59,K. K. Damodaran,CPI(M),47939,2026
@@ -185,10 +185,10 @@ ac_no,name,district,winner,party,alliance,votes,vote_share,runner_up,runner_up_p
 44,Tanur,Malappuram,P. K. Navas,IUML,UDF,91992,53.38,P. Mohammed Sameer,IND,27131,2026
 45,Tirur,Malappuram,Kurukkoli Moideen,IUML,UDF,106108,53.45,V. Abdurahiman,CPI(M),24137,2026
 46,Kottakkal,Malappuram,K. K. Abid Hussain Thangal,IUML,UDF,118111,61.77,Preethi Konchath,CPI(M),62638,2026
-47,Thavanur,Malappuram,V. S Joy,INC,UDF,79661,48.61,K T Jaleel,IND,14647,2026
-48,Ponnani,Malappuram,K. P Noushad Ali,INC,UDF,80674,49.81,M. K Sakkeer,CPI(M),13267,2026
+47,Thavanur,Malappuram,V. S. Joy,INC,UDF,79661,48.61,K T Jaleel,IND,14647,2026
+48,Ponnani,Malappuram,K. P. Noushad Ali,INC,UDF,80674,49.81,M. K. Sakkeer,CPI(M),13267,2026
 49,Thrithala,Palakkad,V. T. Balram,INC,UDF,76427,47.12,M. B. Rajesh,CPI(M),8385,2026
-50,Pattambi,Palakkad,Muhammed Muhsin,CPI,LDF,80062,47.25,T.P. Shaji,INC,9442,2026
+50,Pattambi,Palakkad,Muhammed Muhsin,CPI,LDF,80062,47.25,T. P. Shaji,INC,9442,2026
 51,Shornur,Palakkad,P. Mammikutty,CPI(M),LDF,70583,52.81,P. Harigovindan,INC,16517,2026
 52,Ottapalam,Palakkad,K. Premkumar,CPI(M),LDF,75362,44.3,P. K. Sasi,IND,26777,2026
 53,Kongad (SC),Palakkad,K. A. Thulasi,INC,UDF,62734,42.2,K. Shanthakumari,CPI(M),3706,2026
@@ -197,7 +197,7 @@ ac_no,name,district,winner,party,alliance,votes,vote_share,runner_up,runner_up_p
 56,Palakkad,Palakkad,Ramesh Pisharody,INC,UDF,62199,42.26,Shobha Surendran,BJP,13147,2026
 57,Tarur (SC),Palakkad,Sumod,CPI(M),LDF,60557,51.52,Subramanian K. C.,INC,11910,2026
 58,Chittur,Palakkad,Sumesh Achuthan,INC,UDF,65325,44.2,V. Murugadas,ISJD,6510,2026
-59,Nenmara,Palakkad,K. Preman,CPI(M),LDF,66521,44.2,A.Thankappan,INC,3305,2026
+59,Nenmara,Palakkad,K. Preman,CPI(M),LDF,66521,44.2,A. Thankappan,INC,3305,2026
 60,Alathur,Palakkad,T. M. Sasi,CPI(M),LDF,61564,49.82,K. M. Febin,INC,8553,2026
 61,Chelakkara (SC),Thrissur,U. R. Pradeep,CPI(M),LDF,76073,58.12,Sivadasan,Ind,29386,2026
 62,Kunnamkulam,Thrissur,A. C. Moideen,CPI(M),LDF,69522,45.22,P. T. Ajay Mohan,INC,4563,2026
@@ -234,15 +234,15 @@ ac_no,name,district,winner,party,alliance,votes,vote_share,runner_up,runner_up_p
 93,Pala,Kottayam,Mani C. Kappan,IND,UDF,50799,37.39,Jose K. Mani,KC(M),2991,2026
 94,Kaduthuruthy,Kottayam,Mons Joseph,KEC,UDF,70353,56.39,Nirmala Jimmy,KC(M),31300,2026
 95,Vaikom (SC),Kottayam,K. Binimon,INC,UDF,52944,41.94,P Pradeep,CPI,1360,2026
-96,Ettumanoor,Kottayam,Nattakom Suresh,INC,UDF,64077,52.13,V..Vasavan,CPI,19752,2026
-97,Kottayam,Kottayam,Thiruvanchoor Radhakrishnan,INC,UDF,68893,60.57,K.Anilkumar,CPI,35986,2026
+96,Ettumanoor,Kottayam,Nattakom Suresh,INC,UDF,64077,52.13,V. Vasavan,CPI,19752,2026
+97,Kottayam,Kottayam,Thiruvanchoor Radhakrishnan,INC,UDF,68893,60.57,K. Anilkumar,CPI,35986,2026
 98,Puthuppally,Kottayam,Chandy Oommen,INC,UDF,84031,66.32,K. M. Radhakrishnan,CPI(M),52907,2026
 99,Changanassery,Kottayam,Vinu Job Kuzhimannil,KEC,UDF,55991,49.54,Job Maichil,KC(M),8368,2026
 100,Kanjirappally,Kottayam,Rony K Baby,INC,UDF,56646,41.66,N. Jayaraj,KC(M),5772,2026
 101,Poonjar,Kottayam,Sebastian M. J.,INC,UDF,56900,39.3,Sebastian Kulathunkal,KC(M),6693,2026
 102,Aroor,Alappuzha,Shanimol Osman,INC,UDF,74469,45.98,Daleema,CPI(M),9324,2026
 103,Cherthala,Alappuzha,P. Prasad,CPI,LDF,83216,48.32,K. R. Rajendra Prasad,INC,14489,2026
-104,Alappuzha,Alappuzha,A.D.Thomas,INC,UDF,81065,51.42,P. P. Chitharanjan,CPI(M),21015,2026
+104,Alappuzha,Alappuzha,A. D. Thomas,INC,UDF,81065,51.42,P. P. Chitharanjan,CPI(M),21015,2026
 105,Ambalappuzha,Alappuzha,G. Sudhakaran,IND,UDF,75184,53.4,H. Salam,CPI(M),27935,2026
 106,Kuttanad,Alappuzha,Reji Cheriyan,KEC,UDF,56594,50.28,Thomas K. Thomas,NCP(SP),20600,2026
 107,Haripad,Alappuzha,Ramesh Chennithala,INC,UDF,68184,47.02,T. T. Jismon,CPI,23377,2026

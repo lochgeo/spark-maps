@@ -46,6 +46,12 @@ def test_constituencies_default_to_latest(client: TestClient) -> None:
     # Source table's margin column has a two-vote typo; the derived value wins.
     assert perumbavoor["margin"] == 28432
 
+    ettumanoor = next(row for row in rows if row["name"] == "Ettumanoor")
+    assert ettumanoor["runner_up"] == "V. Vasavan"
+
+    devikulam = next(row for row in rows if row["ac_no"] == 104)
+    assert devikulam["winner"] == "A. D. Thomas"
+
 
 def test_constituencies_2021(client: TestClient) -> None:
     response = client.get("/api/constituencies?year=2021")
@@ -106,8 +112,7 @@ def test_districts(client: TestClient) -> None:
         "lat": pytest.approx(10.01657),
         "lng": pytest.approx(76.34275),
     }
-    assert ernakulam["has_details"] is False
-    assert districts["Thrissur"]["has_details"] is True
+    assert all(district["has_details"] is True for district in districts.values())
 
 
 def test_districts_2021(client: TestClient) -> None:
@@ -173,8 +178,32 @@ def test_district_details_case_insensitive(client: TestClient) -> None:
     assert response.json()["district"] == "Thrissur"
 
 
+def test_district_details_all_districts(client: TestClient) -> None:
+    districts = client.get("/api/districts").json()
+    assert len(districts) == 14
+    for district in districts:
+        name = district["name"]
+        response = client.get(f"/api/districts/{name}/details")
+        assert response.status_code == 200, name
+        data = response.json()
+        assert data["district"] == name
+        assert data["summary"]
+        counts = data["counts"]
+        assert counts["revenue_divisions"] >= 1
+        assert counts["taluks"] >= 3
+        assert counts["villages"] > 0
+        assert counts["blocks"] >= 4
+        assert counts["gram_panchayats"] > 0
+        assert counts["towns"] == (
+            counts["municipalities"] + counts["municipal_corporations"] + counts["census_towns"]
+        )
+        assert counts["assembly_seats"] == district["ac_count"]
+        assert counts["parliamentary_seats"] >= 1
+        assert len(data["sources"]) >= 4
+
+
 def test_district_details_unknown(client: TestClient) -> None:
-    response = client.get("/api/districts/Ernakulam/details")
+    response = client.get("/api/districts/Atlantis/details")
     assert response.status_code == 404
     assert "No administrative profile" in response.json()["detail"]
 
@@ -206,6 +235,8 @@ def test_constituency_geojson(client: TestClient) -> None:
     )
     assert sample["properties"]["winner"] == "Pinarayi Vijayan"
     assert sample["properties"]["election_year"] == 2026
+    assert isinstance(sample["properties"]["label_lat"], float)
+    assert isinstance(sample["properties"]["label_lng"], float)
     assert sample["geometry"]["type"] in {"Polygon", "MultiPolygon"}
 
 
@@ -253,7 +284,62 @@ def test_index(client: TestClient) -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert "Kerala" in response.text
+    assert 'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="' in response.text
+    assert 'integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="' in response.text
 
 
 def test_health(client: TestClient) -> None:
     assert client.get("/healthz").json() == {"status": "ok"}
+
+
+def test_openapi_schemas(client: TestClient) -> None:
+    schema = client.get("/openapi.json").json()
+    schemas = schema.get("components", {}).get("schemas", {})
+    assert "ConstituencyResult" in schemas
+    assert "DistrictSummary" in schemas
+    assert "DistrictProfile" in schemas
+    assert "MetaResponse" in schemas
+
+
+def test_geojson_etag_caching(client: TestClient) -> None:
+    for path in (
+        "/api/geojson/constituencies",
+        "/api/geojson/districts",
+        "/api/geojson/state",
+    ):
+        first = client.get(path)
+        assert first.status_code == 200
+        etag = first.headers.get("etag")
+        assert etag and etag.startswith('W/"')
+
+        cached = client.get(path, headers={"If-None-Match": etag})
+        assert cached.status_code == 304
+        assert cached.text == ""
+
+
+def test_static_export(tmp_path) -> None:
+    from scripts.export_static import export_static
+
+    export_static(tmp_path)
+    assert (tmp_path / "index.html").exists()
+    assert (tmp_path / "static" / "js" / "app.js").exists()
+    assert (tmp_path / "api" / "meta.json").exists()
+    assert (tmp_path / "api" / "constituencies-2026.json").exists()
+    assert (tmp_path / "api" / "constituencies-2021.json").exists()
+    assert (tmp_path / "api" / "geojson" / "constituencies-2026.json").exists()
+    assert (tmp_path / "api" / "districts" / "Thrissur" / "details.json").exists()
+
+
+def test_atomic_ensure_database(tmp_path) -> None:
+    from app.config import HQ_CSV, RESULTS_CSV
+    from app.db import ensure_database, fetch_headquarters, fetch_results
+
+    db_file = tmp_path / "kerala.db"
+    ensure_database(db_file, RESULTS_CSV, HQ_CSV)
+    assert db_file.exists()
+    assert len(fetch_results(db_file)) == 280
+    assert len(fetch_headquarters(db_file)) == 14
+    # Calling a second time is a fast no-op when CSVs haven't changed
+    mtime_before = db_file.stat().st_mtime
+    ensure_database(db_file, RESULTS_CSV, HQ_CSV)
+    assert db_file.stat().st_mtime == mtime_before

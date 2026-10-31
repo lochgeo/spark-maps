@@ -24,7 +24,7 @@ from pathlib import Path
 import pandas as pd
 from shapely import make_valid, set_precision, to_geojson
 from shapely.geometry import shape
-from shapely.ops import unary_union
+from shapely.ops import polylabel, unary_union
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "data" / "raw"
@@ -69,6 +69,14 @@ def clean(value: object) -> str:
     if value is None or (isinstance(value, float) and math.isnan(value)):
         return ""
     text = re.sub(r"\[\s*\d+\s*\]", "", str(value))
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def clean_person_name(value: object) -> str:
+    text = clean(value)
+    text = re.sub(r"\.{2,}", ".", text)
+    text = re.sub(r"\.(?=[A-Za-z])", ". ", text)
+    text = re.sub(r"\b([A-Z])\.\s*([A-Z])\s+(?=[A-Z][a-z])", r"\1. \2. ", text)
     return re.sub(r"\s+", " ", text).strip()
 
 
@@ -166,12 +174,12 @@ def load_results(html_path: Path, year: int) -> list[dict]:
                 "ac_no": ac_no,
                 "name": name,
                 "district": district,
-                "winner": clean(record.get("Winner|Candidate")),
+                "winner": clean_person_name(record.get("Winner|Candidate")),
                 "party": pick(record, "Winner|Party.1", "Winner|Party"),
                 "alliance": pick(record, "Winner|Alliance.1", "Winner|Alliance"),
                 "votes": votes,
                 "vote_share": float(vote_share),
-                "runner_up": clean(record.get("Runner-up|Candidate")),
+                "runner_up": clean_person_name(record.get("Runner-up|Candidate")),
                 "runner_up_party": pick(record, "Runner-up|Party.1", "Runner-up|Party"),
                 "margin": margin,
                 "election_year": year,
@@ -234,10 +242,21 @@ def prepare(geometry, tolerance: float):
     return geometry
 
 
+def label_point(geometry) -> tuple[float, float]:
+    polygon = (
+        geometry
+        if geometry.geom_type == "Polygon"
+        else max(geometry.geoms, key=lambda part: part.area)
+    )
+    point = polylabel(polygon, tolerance=0.001)
+    return round(point.y, 5), round(point.x, 5)
+
+
 def feature(geometry, properties: dict) -> dict:
+    label_lat, label_lng = label_point(geometry)
     return {
         "type": "Feature",
-        "properties": properties,
+        "properties": {**properties, "label_lat": label_lat, "label_lng": label_lng},
         "geometry": json.loads(to_geojson(geometry)),
     }
 

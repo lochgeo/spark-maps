@@ -8,8 +8,13 @@
   <meta name="theme-color" content="#070a11" />
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://unpkg.com" crossorigin />
-  <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://server.arcgisonline.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
   <link rel="stylesheet" href="/static/css/app.css" />
 </head>
 <body>
@@ -30,7 +35,7 @@
             <path d="m20 20-3.2-3.2"></path>
           </svg>
           <input id="search" type="search" placeholder="Search constituency, MLA, party…" autocomplete="off" spellcheck="false" />
-          <kbd>⌘K</kbd>
+          <kbd id="search-kbd">⌘K</kbd>
         </label>
       </div>
 
@@ -45,8 +50,17 @@
 
       <div class="list-head">
         <span id="list-title">All constituencies</span>
-        <span id="list-count">140</span>
+        <div class="list-head-right">
+          <button class="filter-chip" id="sort-btn" type="button" data-sort="ac" title="Sort constituencies">
+            Sort: <span id="sort-label">#</span>
+          </button>
+          <button class="filter-chip" id="swings-btn" type="button" aria-pressed="false" hidden title="Filter to seats that changed alliance">
+            Flipped <span id="swings-count">0</span>
+          </button>
+          <span id="list-count">140</span>
+        </div>
       </div>
+      <div class="party-bar" id="party-bar" role="group" aria-label="Filter by party"></div>
       <div class="list" id="list" role="list" aria-label="Constituencies"></div>
 
       <footer class="sidebar-foot">
@@ -68,6 +82,11 @@
 
       <div class="map-controls">
         <div class="segmented year-switch" id="years" role="group" aria-label="Election results year"></div>
+        <div class="segmented" id="choropleths" role="group" aria-label="Color map by">
+          <button type="button" data-choropleth="alliance" class="is-active" title="Color by winning alliance">Winner</button>
+          <button type="button" data-choropleth="swings" title="Highlight seats that changed alliance">Swings</button>
+          <button type="button" data-choropleth="margin" title="Shade seats by victory margin">Margin</button>
+        </div>
         <div class="segmented" id="basemaps" role="group" aria-label="Basemap">
           <button type="button" data-basemap="dark" class="is-active">Dark</button>
           <button type="button" data-basemap="light">Light</button>
@@ -125,7 +144,11 @@
     <p class="fineprint">Built with FastAPI, Leaflet and open data.</p>
   </dialog>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/static/js/app.js"></script>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script type="module" src="/static/js/app.js"></script>
 </body>
 </html>

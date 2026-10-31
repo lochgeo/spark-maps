@@ -10,8 +10,9 @@ from __future__ import annotations
 
 import argparse
 import sys
-import urllib.request
 from pathlib import Path
+
+import httpx
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "data" / "raw"
@@ -31,25 +32,26 @@ WIKI_REVISIONS = {
 FILES = {
     "KERALA_ASSEMBLY.geojson": f"{GEO_BASE}/KERALA_ASSEMBLY.geojson",
     "KERALA_DISTRICTS.geojson": f"{GEO_BASE}/KERALA_DISTRICTS.geojson",
-    "KERALA_STATE.geojson": f"{GEO_BASE}/KERALA_STATE.geojson",
     **{
         f"election_{year}.html": f"https://en.wikipedia.org/w/index.php?oldid={revision}"
         for year, revision in WIKI_REVISIONS.items()
     },
 }
 
-USER_AGENT = "spark-maps/0.1 (Kerala mapping project; data build script)"
+USER_AGENT = "spark-maps/0.3 (Kerala mapping project; data build script)"
 
 
-def download(url: str, destination: Path, force: bool = False) -> None:
+def download(
+    client: httpx.Client, url: str, destination: Path, force: bool = False
+) -> None:
     if destination.exists() and not force:
         print(f"  skip  {destination.name} (already present)")
         return
 
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     print(f"  get   {destination.name}")
-    with urllib.request.urlopen(request, timeout=120) as response:
-        payload = response.read()
+    response = client.get(url)
+    response.raise_for_status()
+    payload = response.content
 
     if len(payload) < 1000:
         raise RuntimeError(f"Downloaded file looks too small ({len(payload)} bytes): {url}")
@@ -64,8 +66,15 @@ def main() -> int:
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     print(f"Downloading raw data into {RAW_DIR}")
-    for name, url in FILES.items():
-        download(url, RAW_DIR / name, force=args.force)
+    transport = httpx.HTTPTransport(retries=3)
+    with httpx.Client(
+        transport=transport,
+        follow_redirects=True,
+        timeout=120,
+        headers={"User-Agent": USER_AGENT},
+    ) as client:
+        for name, url in FILES.items():
+            download(client, url, RAW_DIR / name, force=args.force)
     print("Done.")
     return 0
 

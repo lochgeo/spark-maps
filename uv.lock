@@ -798,6 +798,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pypdf"
+version = "6.21.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/e1/ec8f4d155c997c45917153a5521e60d6ee6389d68abdcbc8e44e564caffc/pypdf-6.21.4.tar.gz", hash = "sha256:c8817e3f888d47a087872ded69812c1ef30cacb871d6e053e0c00bbaf0bc2163", size = 7109255, upload-time = "2026-10-28T17:00:54.81Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3f/4b/77e8ad4ac42c9d93600f40541a50e9feb3a61d2bbee2d76f659346072051/pypdf-6.21.4-py3-none-any.whl", hash = "sha256:33e4fb41ca352810eb4e9838aa0d82d6888a5f8bf682f43e99cce5faa666255c", size = 410430, upload-time = "2026-10-28T17:00:53.146Z" },
+]
+
+[[package]]
 name = "pytest"
 version = "9.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1013,6 +1022,7 @@ data = [
     { name = "httpx" },
     { name = "lxml" },
     { name = "pandas" },
+    { name = "pypdf" },
     { name = "shapely" },
 ]
 
@@ -1029,6 +1039,7 @@ requires-dist = [
     { name = "httpx", marker = "extra == 'data'", specifier = ">=0.27.0" },
     { name = "lxml", marker = "extra == 'data'", specifier = ">=5.2.0" },
     { name = "pandas", marker = "extra == 'data'", specifier = ">=2.2.0" },
+    { name = "pypdf", marker = "extra == 'data'", specifier = ">=5.0.0" },
     { name = "shapely", marker = "extra == 'data'", specifier = ">=2.0.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30.0" },
 ]
