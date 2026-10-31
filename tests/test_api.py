@@ -285,7 +285,9 @@ def test_taluks_geojson(client: TestClient) -> None:
     assert response.status_code == 200
     features = response.json()["features"]
     assert len(features) == 78
-    assert all(f["geometry"]["type"] == "Polygon" for f in features)
+    # Talappilly legitimately has a detached part (Alur village piece is
+    # separated from the main body by the Kunnamkulam carve).
+    assert all(f["geometry"]["type"] in {"Polygon", "MultiPolygon"} for f in features)
     thrissur_taluks = {
         f["properties"]["name"]
         for f in features

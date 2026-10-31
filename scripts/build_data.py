@@ -428,7 +428,11 @@ def _clean_taluk_geometry(geometry):
         return Polygon(geometry.exterior)
     parts = [part for part in geometry.geoms if part.geom_type == "Polygon"]
     max_area = max(part.area for part in parts)
-    threshold = max(0.0005, max_area * 0.15)
+    # Only drop true digitising crumbs. The previous threshold (~6 km² or
+    # 15 % of the main part) silently swallowed whole census villages that
+    # ended up as separate pieces, leaving multi-km² holes in the taluk map
+    # (e.g. the Alur gap between Kunnamkulam/Thrissur/Chavakkad taluks).
+    threshold = max(5e-6, max_area * 0.002)
     significant = [Polygon(part.exterior) for part in parts if part.area >= threshold]
     return unary_union(significant)
 
