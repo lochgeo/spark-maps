@@ -1,5 +1,5 @@
 import { colorFor, el, esc, isSeatFlipped, state } from "./state.js";
-import { acTooltip, districtTooltip } from "./views.js";
+import { TALUK_PALETTE, acTooltip, districtTooltip, talukTooltip } from "./views.js";
 
 // Labels sit on the seaward side for the coastal headquarters so they do
 // not run into their inland neighbours.
@@ -229,7 +229,232 @@ function buildHqLayer(districts) {
   return group;
 }
 
+export function clearFocusLayers() {
+  for (const layer of [
+    state.focusTalukLayer,
+    state.focusTalukLabels,
+    state.focusAcLayer,
+    state.focusAcLabels,
+    state.focusDistrictOutline,
+    state.focusHqLayer,
+  ]) {
+    layer?.remove();
+  }
+  state.focusTalukLayer = null;
+  state.focusTalukLabels = null;
+  state.focusAcLayer = null;
+  state.focusAcLabels = null;
+  state.focusDistrictOutline = null;
+  state.focusHqLayer = null;
+}
+
+export function buildDistrictFocusLayers(districtName, taluksGeo) {
+  clearFocusLayers();
+  const district = state.byDistrict.get(districtName);
+  if (!district) return;
+
+  // 1. District outer boundary glow
+  const distFeature = state.districtGeo?.features.find(
+    (f) => f.properties.name === districtName,
+  );
+  if (distFeature) {
+    state.focusDistrictOutline = L.geoJSON(distFeature, {
+      pane: "districts",
+      interactive: false,
+      style: {
+        color: "#2dd4bf",
+        weight: 2.6,
+        opacity: 0.92,
+        fill: false,
+        lineJoin: "round",
+      },
+    });
+  }
+
+  // 2. Taluk polygons + labels for this district
+  if (taluksGeo) {
+    const talukFeatures = taluksGeo.features
+      .filter((f) => f.properties.district === districtName)
+      .map((f, idx) => ({
+        ...f,
+        properties: {
+          ...f.properties,
+          color: TALUK_PALETTE[idx % TALUK_PALETTE.length],
+        },
+      }));
+
+    state.focusTalukLabels = L.layerGroup();
+    state.focusTalukLayer = L.geoJSON(
+      { type: "FeatureCollection", features: talukFeatures },
+      {
+        pane: "acs",
+        style: (feature) => focusTalukStyle(feature.properties, false, false),
+        onEachFeature: (feature, layer) => {
+          const props = feature.properties;
+          layer.bindTooltip(talukTooltip(props), {
+            sticky: true,
+            className: "mla-tip",
+            direction: "top",
+            offset: [0, -8],
+            opacity: 1,
+          });
+          layer.on("mouseover", () => {
+            state.hoveredTaluk = props.name;
+            refreshFocusTalukStyles();
+            layer.bringToFront();
+          });
+          layer.on("mouseout", () => {
+            if (state.hoveredTaluk === props.name) state.hoveredTaluk = null;
+            refreshFocusTalukStyles();
+          });
+          layer.on("click", () => {
+            state.selectedTaluk =
+              state.selectedTaluk === props.name ? null : props.name;
+            refreshFocusTalukStyles();
+            if (state.selectedTaluk) {
+              map.flyToBounds(layer.getBounds(), {
+                ...selectionPadding(11.5),
+                duration: 0.65,
+              });
+            }
+            callbacks.onSelectTaluk?.(state.selectedTaluk);
+          });
+
+          L.marker(labelCoordinates(feature, layer), {
+            icon: L.divIcon({
+              className: "taluk-label",
+              html: `<span>${esc(props.name)}</span>`,
+              iconSize: [0, 0],
+            }),
+            interactive: false,
+            keyboard: false,
+            pane: "labels",
+          }).addTo(state.focusTalukLabels);
+        },
+      },
+    );
+  }
+
+  // 3. Assembly constituency polygons + labels for this district only
+  const acSet = new Set(district.ac_nos);
+  const acFeatures = (state.acGeo?.features ?? []).filter((f) =>
+    acSet.has(f.properties.ac_no),
+  );
+  state.focusAcLabels = L.layerGroup();
+  state.focusAcLayer = L.geoJSON(
+    { type: "FeatureCollection", features: acFeatures },
+    {
+      pane: "acs",
+      style: (feature) => acCurrentStyle(feature.properties.ac_no),
+      onEachFeature: (feature, layer) => {
+        const acNo = feature.properties.ac_no;
+        const constituency = state.byAc.get(acNo) ?? feature.properties;
+        layer.bindTooltip(acTooltip(constituency), {
+          sticky: true,
+          className: "mla-tip",
+          direction: "top",
+          offset: [0, -8],
+          opacity: 1,
+        });
+        layer.on("mouseover", () => {
+          layer.setStyle({
+            ...acCurrentStyle(acNo),
+            color: "#f8fafc",
+            weight: 2.2,
+            fillOpacity: 0.65,
+          });
+          layer.bringToFront();
+        });
+        layer.on("mouseout", () => {
+          layer.setStyle(acCurrentStyle(acNo));
+        });
+        layer.on("click", () => callbacks.onSelectAc(acNo));
+
+        L.marker(labelCoordinates(feature, layer), {
+          icon: L.divIcon({
+            className: "ac-label",
+            html: `<span>${esc(constituency.name)}</span>`,
+            iconSize: [0, 0],
+          }),
+          interactive: false,
+          keyboard: false,
+          pane: "labels",
+        }).addTo(state.focusAcLabels);
+      },
+    },
+  );
+
+  // 4. HQ marker for just this district
+  state.focusHqLayer = buildHqLayer([district]);
+}
+
+function focusTalukStyle(props, selected, hovered) {
+  const color = props.color || "#2dd4bf";
+  return {
+    color: selected || hovered ? "#ffffff" : "rgba(248, 250, 252, 0.85)",
+    weight: selected ? 2.6 : hovered ? 2.1 : 1.3,
+    opacity: 0.96,
+    fillColor: color,
+    fillOpacity: selected ? 0.62 : hovered ? 0.52 : 0.38,
+    lineJoin: "round",
+  };
+}
+
+export function refreshFocusTalukStyles() {
+  if (!state.focusTalukLayer) return;
+  state.focusTalukLayer.eachLayer((layer) => {
+    const props = layer.feature.properties;
+    const selected = state.selectedTaluk === props.name;
+    const hovered = state.hoveredTaluk === props.name;
+    layer.setStyle(focusTalukStyle(props, selected, hovered));
+  });
+}
+
+export function focusOnTaluk(talukName) {
+  if (!state.focusTalukLayer) return;
+  state.focusTalukLayer.eachLayer((layer) => {
+    if (layer.feature.properties.name === talukName) {
+      map.flyToBounds(layer.getBounds(), {
+        ...selectionPadding(11.5),
+        duration: 0.65,
+      });
+      layer.bringToFront();
+    }
+  });
+}
+
 export function syncModeLayers() {
+  if (state.focusedDistrict) {
+    // Hide all full-Kerala layers so ONLY the selected district is visible
+    state.stateLayer?.remove();
+    state.acLayer?.remove();
+    state.acLabels?.remove();
+    state.districtOutline?.remove();
+    state.districtFill?.remove();
+    state.districtLabels?.remove();
+    state.hqLayer?.remove();
+
+    state.focusDistrictOutline?.addTo(map);
+    state.focusHqLayer?.addTo(map);
+
+    if (state.districtSubLayer === "constituencies") {
+      state.focusTalukLayer?.remove();
+      state.focusTalukLabels?.remove();
+      state.focusAcLayer?.addTo(map);
+      state.focusAcLabels?.addTo(map);
+    } else {
+      state.focusAcLayer?.remove();
+      state.focusAcLabels?.remove();
+      state.focusTalukLayer?.addTo(map);
+      state.focusTalukLabels?.addTo(map);
+    }
+    updateHqLabels();
+    return;
+  }
+
+  clearFocusLayers();
+  state.stateLayer?.addTo(map);
+
   if (state.mode === "districts") {
     state.acLayer?.remove();
     state.acLabels?.remove();
@@ -437,6 +662,7 @@ export function refreshDistrictStyles() {
 
 export function updateLabels() {
   if (!map || !state.acLabels) return;
+  if (state.focusedDistrict) return;
   const zoom = map.getZoom();
   const showAcLabels = state.labels && state.mode === "constituencies" && zoom >= 9;
 

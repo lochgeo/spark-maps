@@ -280,6 +280,27 @@ def test_state_geojson(client: TestClient) -> None:
     assert feature["geometry"]["type"] in {"Polygon", "MultiPolygon"}
 
 
+def test_taluks_geojson(client: TestClient) -> None:
+    response = client.get("/api/geojson/taluks")
+    assert response.status_code == 200
+    features = response.json()["features"]
+    assert len(features) == 78
+    thrissur_taluks = {
+        f["properties"]["name"]
+        for f in features
+        if f["properties"]["district"] == "Thrissur"
+    }
+    assert thrissur_taluks == {
+        "Thrissur",
+        "Chavakkad",
+        "Talappilly",
+        "Kunnamkulam",
+        "Mukundapuram",
+        "Chalakudy",
+        "Kodungallur",
+    }
+
+
 def test_index(client: TestClient) -> None:
     response = client.get("/")
     assert response.status_code == 200
@@ -327,6 +348,7 @@ def test_static_export(tmp_path) -> None:
     assert (tmp_path / "api" / "constituencies-2026.json").exists()
     assert (tmp_path / "api" / "constituencies-2021.json").exists()
     assert (tmp_path / "api" / "geojson" / "constituencies-2026.json").exists()
+    assert (tmp_path / "api" / "geojson" / "taluks.json").exists()
     assert (tmp_path / "api" / "districts" / "Thrissur" / "details.json").exists()
 
 

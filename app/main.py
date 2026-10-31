@@ -169,3 +169,12 @@ def state_geojson(request: Request) -> Response:
         store.state_geojson,
         store.state_etag,
     )
+
+
+@app.get("/api/geojson/taluks", tags=["geojson"])
+def taluks_geojson(request: Request) -> Response:
+    return _cached_geojson_response(
+        request,
+        store.taluks_geojson,
+        store.taluks_etag,
+    )

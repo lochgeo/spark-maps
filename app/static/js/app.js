@@ -1,10 +1,13 @@
-import { fetchJSON, loadDistrictDetails, loadGeometries, loadYear } from "./api.js";
+import { fetchJSON, loadDistrictDetails, loadGeometries, loadTaluksGeo, loadYear } from "./api.js";
 import {
+  buildDistrictFocusLayers,
   buildResultLayers,
+  focusOnTaluk,
   initMap,
   map,
   refreshAcStyles,
   refreshDistrictStyles,
+  refreshFocusTalukStyles,
   selectionPadding,
   setBasemap,
   setHoveredAc,
@@ -47,6 +50,11 @@ async function boot() {
     initMap({
       onSelectAc: (acNo) => selectAc(acNo),
       onSelectDistrict: (name) => selectDistrict(name),
+      onSelectTaluk: (talukName) => {
+        el.details?.querySelectorAll("[data-taluk-link]").forEach((btn) => {
+          btn.classList.toggle("is-active", btn.dataset.talukLink === talukName);
+        });
+      },
       onHoverChange: markHoveredRow,
       onHideHint: hideHint,
     });
@@ -89,6 +97,10 @@ function applyYear(year, data) {
     syncModeLayers();
   } else {
     updateLayerTooltips();
+    if (state.focusedDistrict) {
+      buildDistrictFocusLayers(state.focusedDistrict, state.taluksGeo);
+      syncModeLayers();
+    }
   }
 
   if (state.mode === "districts") refreshDistrictStyles();
@@ -276,10 +288,66 @@ function renderPartyBar() {
     .join("");
 }
 
+function updateFocusBar() {
+  if (!el.focusBar) return;
+  if (!state.focusedDistrict) {
+    el.focusBar.hidden = true;
+    return;
+  }
+  el.focusBar.hidden = false;
+  if (el.focusDistrictName) {
+    el.focusDistrictName.textContent = state.focusedDistrict;
+  }
+  el.sublayers?.querySelectorAll("[data-sublayer]").forEach((btn) => {
+    const active = btn.dataset.sublayer === state.districtSubLayer;
+    btn.classList.toggle("is-active", active);
+    btn.setAttribute("aria-pressed", String(active));
+  });
+}
+
+function setDistrictSubLayer(sublayer) {
+  if (sublayer !== "taluks" && sublayer !== "constituencies") return;
+  if (state.districtSubLayer === sublayer) return;
+  state.districtSubLayer = sublayer;
+  updateFocusBar();
+  syncModeLayers();
+  renderLegend();
+}
+
+function exitDistrictFocus(options = {}) {
+  if (!state.focusedDistrict) return;
+  state.focusedDistrict = null;
+  state.selectedTaluk = null;
+  state.hoveredTaluk = null;
+  state.selected = null;
+  updateFocusBar();
+  updateChoroplethSwitch();
+  syncModeLayers();
+  if (state.mode === "districts") refreshDistrictStyles();
+  else refreshAcStyles();
+  hideDetails();
+  renderLegend();
+  markActiveRow();
+  if (!options.skipFly && state.stateLayer) {
+    map.flyToBounds(state.stateLayer.getBounds(), {
+      padding: [26, 26],
+      duration: 0.75,
+    });
+  }
+  if (!options.skipHash) setHash("");
+}
+
 function selectAc(acNo, options = {}) {
   const constituency = state.byAc.get(acNo);
   const layer = state.acLayers.get(acNo);
   if (!constituency || !layer) return;
+
+  if (state.focusedDistrict && state.focusedDistrict !== constituency.district) {
+    state.focusedDistrict = null;
+    state.selectedTaluk = null;
+    updateFocusBar();
+    syncModeLayers();
+  }
 
   state.selected = { type: "ac", id: acNo };
   state.hoveredAc = null;
@@ -300,17 +368,27 @@ function selectAc(acNo, options = {}) {
   if (window.innerWidth <= 900) closeSidebar();
 }
 
-function selectDistrict(name, options = {}) {
+async function selectDistrict(name, options = {}) {
   const district = state.byDistrict.get(name);
   const layer = state.districtLayers.get(name);
   if (!district || !layer) return;
 
   state.selected = { type: "district", id: name };
+  state.focusedDistrict = name;
+  state.selectedTaluk = null;
+  state.hoveredTaluk = null;
   state.hoveredDistrict = null;
-  refreshDistrictStyles();
-  layer.bringToFront();
 
-  const boundsOptions = selectionPadding(10);
+  const taluksGeo = await loadTaluksGeo();
+  if (state.focusedDistrict !== name) return;
+
+  buildDistrictFocusLayers(name, taluksGeo);
+  updateFocusBar();
+  updateChoroplethSwitch();
+  syncModeLayers();
+  renderLegend();
+
+  const boundsOptions = selectionPadding(10.5);
   if (options.fly === false) {
     map.fitBounds(layer.getBounds(), boundsOptions);
   } else {
@@ -325,13 +403,17 @@ function selectDistrict(name, options = {}) {
 }
 
 function setMode(mode, options = {}) {
-  if (mode === state.mode) return;
   if (mode !== "constituencies" && mode !== "districts") return;
+  if (mode === state.mode && !state.focusedDistrict) return;
 
   state.mode = mode;
+  state.focusedDistrict = null;
+  state.selectedTaluk = null;
+  state.hoveredTaluk = null;
   state.selected = null;
   state.hoveredAc = null;
   state.hoveredDistrict = null;
+  updateFocusBar();
   hideDetails();
   if (!options.skipHash) setHash("");
 
@@ -358,6 +440,10 @@ function setMode(mode, options = {}) {
 }
 
 function closeDetails(options = {}) {
+  if (state.focusedDistrict && state.selected?.type === "district") {
+    exitDistrictFocus(options);
+    return;
+  }
   state.selected = null;
   state.hoveredAc = null;
   state.hoveredDistrict = null;
@@ -393,8 +479,31 @@ function openDetails(html) {
   el.details.querySelectorAll("[data-ac-link]").forEach((button) => {
     button.addEventListener("click", () => {
       const acNo = Number(button.dataset.acLink);
+      if (state.focusedDistrict) {
+        setDistrictSubLayer("constituencies");
+        selectAc(acNo);
+        return;
+      }
       if (state.mode !== "constituencies") setMode("constituencies", { skipHash: true });
       selectAc(acNo);
+    });
+  });
+
+  el.details.querySelectorAll("[data-taluk-link]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const talukName = button.dataset.talukLink;
+      if (!talukName) return;
+      if (state.districtSubLayer !== "taluks") {
+        setDistrictSubLayer("taluks");
+      }
+      state.selectedTaluk = state.selectedTaluk === talukName ? null : talukName;
+      refreshFocusTalukStyles();
+      el.details.querySelectorAll("[data-taluk-link]").forEach((btn) => {
+        btn.classList.toggle("is-active", btn.dataset.talukLink === state.selectedTaluk);
+      });
+      if (state.selectedTaluk) {
+        focusOnTaluk(state.selectedTaluk);
+      }
     });
   });
 
@@ -451,6 +560,16 @@ function markHoveredRow() {
 }
 
 function renderLegend() {
+  if (state.focusedDistrict && state.districtSubLayer === "taluks") {
+    const talukFeatures = (state.taluksGeo?.features ?? []).filter(
+      (f) => f.properties.district === state.focusedDistrict,
+    );
+    el.legend.innerHTML = `
+      <div class="legend-title">${esc(state.focusedDistrict)} · ${talukFeatures.length} taluks</div>
+      <div class="legend-note hq-note"><i class="hq-swatch"></i>District headquarters</div>`;
+    return;
+  }
+
   const alliances = state.yearMeta?.alliances ?? [];
   const items = alliances
     .map(
@@ -707,6 +826,13 @@ function bindUI() {
 
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => setMode(tab.dataset.tab));
+  });
+
+  el.backKeralaBtn?.addEventListener("click", () => exitDistrictFocus());
+
+  el.sublayers?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-sublayer]");
+    if (button) setDistrictSubLayer(button.dataset.sublayer);
   });
 
   el.years.addEventListener("click", (event) => {

@@ -68,6 +68,7 @@ def export_static(out_dir: Path) -> None:
     _write_json(api_dir / "meta.json", store.meta)
     _write_json(api_dir / "district-headquarters.json", store.headquarters)
     _write_raw(api_dir / "geojson" / "state.json", store.state_geojson)
+    _write_raw(api_dir / "geojson" / "taluks.json", store.taluks_geojson)
 
     for year in store.years:
         _write_json(api_dir / f"constituencies-{year}.json", store.results_by_year[year])

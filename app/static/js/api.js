@@ -70,6 +70,14 @@ export async function loadGeometries(year) {
   return { acGeo, districtGeo, stateGeo };
 }
 
+export function loadTaluksGeo() {
+  if (state.taluksGeo) return Promise.resolve(state.taluksGeo);
+  return fetchJSON("/api/geojson/taluks").then((geo) => {
+    state.taluksGeo = geo;
+    return geo;
+  });
+}
+
 export function loadDistrictDetails(name) {
   if (state.districtDetails.has(name)) {
     return Promise.resolve(state.districtDetails.get(name));

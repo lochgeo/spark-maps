@@ -32,6 +32,8 @@ WIKI_REVISIONS = {
 FILES = {
     "KERALA_ASSEMBLY.geojson": f"{GEO_BASE}/KERALA_ASSEMBLY.geojson",
     "KERALA_DISTRICTS.geojson": f"{GEO_BASE}/KERALA_DISTRICTS.geojson",
+    "KERALA_SUBDISTRICTS.geojson": f"{GEO_BASE}/KERALA_SUBDISTRICTS.geojson",
+    "KERALA_VILLAGES.geojson": f"{GEO_BASE}/KERALA_VILLAGES.geojson",
     **{
         f"election_{year}.html": f"https://en.wikipedia.org/w/index.php?oldid={revision}"
         for year, revision in WIKI_REVISIONS.items()

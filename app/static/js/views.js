@@ -17,6 +17,24 @@ export function acTooltip(constituency) {
     <div class="tip-party">${esc(constituency.party)} · ${esc(constituency.alliance)}</div>`;
 }
 
+export const TALUK_PALETTE = [
+  "#2dd4bf",
+  "#38bdf8",
+  "#a78bfa",
+  "#fb923c",
+  "#f472b6",
+  "#facc15",
+  "#4ade80",
+];
+
+export function talukTooltip(taluk) {
+  return `
+    <div class="tip-name">${esc(taluk.name)} Taluk</div>
+    <div class="tip-meta">HQ ${esc(taluk.headquarters)} · ${esc(taluk.district)} district</div>
+    ${taluk.revenue_division ? `<div class="tip-mla"><i style="--c:${taluk.color || "#2dd4bf"}"></i><strong>${esc(taluk.revenue_division)} division</strong></div>` : ""}
+    <div class="tip-party">${taluk.village_count} revenue villages</div>`;
+}
+
 export function districtTooltip(district) {
   const seats = Object.entries(district.seats)
     .filter(([, count]) => count > 0)
@@ -179,7 +197,21 @@ function renderDistrictProfile(profile) {
   if (demo.urban_share) facts.push(`${demo.urban_share}% urban`);
 
   const divisions = (profile.revenue_divisions ?? []).map(divisionHtml).join("");
-  const taluks = (profile.taluks ?? []).map(talukHtml).join("");
+  const divisionByTaluk = new Map();
+  for (const division of profile.revenue_divisions ?? []) {
+    for (const tname of division.taluks ?? []) {
+      divisionByTaluk.set(tname, division.name);
+    }
+  }
+  const taluks = `<div class="subdiv-grid">${(profile.taluks ?? [])
+    .map((taluk, idx) =>
+      talukHtml(
+        taluk,
+        divisionByTaluk.get(taluk.name) || "",
+        TALUK_PALETTE[idx % TALUK_PALETTE.length],
+      ),
+    )
+    .join("")}</div>`;
   const blocks = (profile.local_government?.blocks ?? []).map(blockHtml).join("");
   const districtPanchayat = profile.local_government?.district_panchayat;
   const blocksBody = `${
@@ -210,9 +242,9 @@ function renderDistrictProfile(profile) {
     <div class="profile-stats">
       ${profileStat("Divisions", counts.revenue_divisions)}
       ${profileStat("Taluks", counts.taluks)}
-      ${profileStat("Villages", counts.villages)}
       ${profileStat("Blocks", counts.blocks)}
       ${profileStat("Panchayats", counts.gram_panchayats)}
+      ${profileStat("Urban bodies", (counts.municipal_corporations ?? 0) + (counts.municipalities ?? 0))}
       ${profileStat("Towns", counts.towns)}
     </div>
 
@@ -220,15 +252,16 @@ function renderDistrictProfile(profile) {
     <p class="profile-facts">${counts.assembly_seats ?? 0} assembly seats · ${counts.parliamentary_seats ?? 0} Lok Sabha seats (${esc((profile.parliamentary_seats ?? []).join(", "))})</p>
 
     ${adminSection(
+      "Taluks (Subdivisions)",
+      `${counts.taluks ?? 0} taluks`,
+      taluks,
+      true,
+    )}
+    ${adminSection(
       "Revenue divisions",
       `${counts.revenue_divisions ?? 0} divisions`,
       divisions,
       true,
-    )}
-    ${adminSection(
-      "Taluks & villages",
-      `${counts.taluks ?? 0} taluks · ${counts.villages ?? 0} villages`,
-      taluks,
     )}
     ${adminSection(
       "Blocks & panchayats",
@@ -268,15 +301,17 @@ function divisionHtml(division) {
     </div>`;
 }
 
-function talukHtml(taluk) {
+function talukHtml(taluk, divisionName, color) {
+  const active = state.selectedTaluk === taluk.name ? " is-active" : "";
   return `
-    <details class="acc-item">
-      <summary>
-        <span>${esc(taluk.name)}</span>
-        <small>${taluk.villages.length} villages · HQ ${esc(taluk.headquarters)}</small>
-      </summary>
-      <div class="tag-list scroll">${taluk.villages.map((village) => `<span class="tag">${esc(village)}</span>`).join("")}</div>
-    </details>`;
+    <button class="subdiv-card${active}" type="button" data-taluk-link="${esc(taluk.name)}" style="--c:${color}">
+      <div class="subdiv-card-top">
+        <i></i>
+        <strong>${esc(taluk.name)}</strong>
+      </div>
+      <small>HQ ${esc(taluk.headquarters)}${divisionName ? ` · ${esc(divisionName)} div.` : ""}</small>
+      <small>${taluk.villages.length} revenue villages</small>
+    </button>`;
 }
 
 function blockHtml(block) {

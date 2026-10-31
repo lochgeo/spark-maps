@@ -501,6 +501,74 @@ button {
 
 /* ---------- Map controls ---------- */
 
+.focus-bar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 520;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: var(--panel);
+  border: 1px solid rgba(45, 212, 191, 0.34);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.focus-bar[hidden] {
+  display: none;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  background: rgba(45, 212, 191, 0.14);
+  border: 1px solid rgba(45, 212, 191, 0.34);
+  border-radius: 9px;
+  color: #d7fff9;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.back-btn:hover {
+  background: rgba(45, 212, 191, 0.24);
+  border-color: rgba(45, 212, 191, 0.55);
+}
+
+.back-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.focus-title {
+  display: flex;
+  flex-direction: column;
+  padding: 0 6px 0 2px;
+}
+
+.focus-title .kicker {
+  font-size: 8.5px;
+  line-height: 1.1;
+}
+
+.focus-title strong {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.focus-bar .segmented {
+  box-shadow: none;
+  background: rgba(148, 163, 184, 0.07);
+}
+
 .map-controls {
   position: absolute;
   top: 16px;
@@ -1222,6 +1290,73 @@ button {
   font-size: 11.5px;
 }
 
+.subdiv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 6px;
+}
+
+.subdiv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 10px;
+  background: rgba(148, 163, 184, 0.055);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.subdiv-card:hover,
+.subdiv-card.is-active {
+  background: rgba(45, 212, 191, 0.1);
+  border-color: rgba(45, 212, 191, 0.38);
+}
+
+.subdiv-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.subdiv-card-top i {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: var(--c, var(--accent));
+}
+
+.subdiv-card-top strong {
+  overflow: hidden;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subdiv-card small {
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+.taluk-label span {
+  display: block;
+  color: #f8fafc;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 0 1px 3px #000, 0 0 8px #000, 0 0 14px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+
 .admin-section {
   margin-top: 9px;
   border-top: 1px solid var(--line);
@@ -1835,6 +1970,19 @@ code {
 
   .menu-btn {
     display: flex;
+  }
+
+  .focus-bar {
+    top: 12px;
+    left: 60px;
+    right: 12px;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 5px 7px;
+  }
+
+  .focus-title {
+    display: none;
   }
 
   .map-controls {

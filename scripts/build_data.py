@@ -14,6 +14,7 @@ The pipeline:
 from __future__ import annotations
 
 import csv
+import difflib
 import json
 import math
 import re
@@ -32,6 +33,7 @@ DATA_DIR = ROOT / "data"
 PROCESSED_DIR = DATA_DIR / "processed"
 RESULTS_CSV = DATA_DIR / "results.csv"
 HQ_CSV = DATA_DIR / "district_hqs.csv"
+DISTRICT_DETAILS_JSON = DATA_DIR / "district_details.json"
 DB_PATH = DATA_DIR / "kerala.db"
 
 # Pinned Wikipedia revisions, matching scripts/fetch_data.py.
@@ -335,6 +337,87 @@ def build_boundaries(rows: list[dict]) -> None:
         PROCESSED_DIR / "kerala_state.geojson",
         [feature(state_geometry, {"name": "Kerala"})],
     )
+    if (RAW_DIR / "KERALA_VILLAGES.geojson").exists() and DISTRICT_DETAILS_JSON.exists():
+        build_taluk_boundaries()
+
+
+SDT_FALLBACK = {
+    "Sulthanbathery": "Sulthan Bathery",
+    "Quilandy": "Koyilandy",
+    "Ernad": "Eranad",
+    "Ottappalam": "Ottapalam",
+    "Mannarkad": "Mannarkkad",
+    "Paravur": "North Paravur",
+    "Peerumade": "Peermade",
+    "Kozhenchery": "Kozhencherry",
+}
+
+
+def _norm_village(text: str) -> str:
+    cleaned = re.sub(r"\(.*?\)", "", str(text).lower())
+    return re.sub(r"[^a-z0-9]", "", cleaned)
+
+
+def build_taluk_boundaries() -> None:
+    details = json.loads(DISTRICT_DETAILS_JSON.read_text(encoding="utf-8"))
+    villages_raw = json.loads(
+        (RAW_DIR / "KERALA_VILLAGES.geojson").read_text(encoding="utf-8")
+    )
+
+    by_district: dict[str, list[dict]] = defaultdict(list)
+    for raw_feature in villages_raw["features"]:
+        props = raw_feature["properties"]
+        by_district[props["DTNAME"].strip().title()].append(raw_feature)
+
+    taluk_features = []
+    for district, profile in details.items():
+        village_to_taluk: dict[str, str] = {}
+        taluk_meta: dict[str, dict] = {}
+        division_by_taluk: dict[str, str] = {}
+        for division in profile.get("revenue_divisions", []):
+            for tname in division["taluks"]:
+                division_by_taluk[tname] = division["name"]
+
+        for taluk in profile.get("taluks", []):
+            tname = taluk["name"]
+            taluk_meta[tname] = {
+                "name": tname,
+                "district": district,
+                "headquarters": taluk["headquarters"],
+                "revenue_division": division_by_taluk.get(tname, ""),
+                "village_count": len(taluk["villages"]),
+            }
+            for village in taluk["villages"]:
+                village_to_taluk[_norm_village(village)] = tname
+
+        valid_taluks = set(taluk_meta)
+        geoms_by_taluk: dict[str, list] = defaultdict(list)
+        known_keys = list(village_to_taluk.keys())
+
+        for raw_feature in by_district[district]:
+            props = raw_feature["properties"]
+            vname = _norm_village(props.get("VILNAME11") or props.get("VILNAM_SOI") or "")
+            tname = village_to_taluk.get(vname)
+            if not tname:
+                matches = difflib.get_close_matches(vname, known_keys, n=1, cutoff=0.72)
+                if matches:
+                    tname = village_to_taluk[matches[0]]
+            if not tname:
+                sdt = props.get("SDTNAME", "").strip()
+                sdt = SDT_FALLBACK.get(sdt, sdt)
+                tname = sdt if sdt in valid_taluks else profile["taluks"][0]["name"]
+            geoms_by_taluk[tname].append(make_valid(shape(raw_feature["geometry"])))
+
+        for taluk in profile.get("taluks", []):
+            tname = taluk["name"]
+            parts = geoms_by_taluk.get(tname)
+            if not parts:
+                raise SystemExit(f"No village polygons matched for taluk {tname} ({district})")
+            merged = unary_union(parts).buffer(0.0003).buffer(-0.0003)
+            geometry = prepare(merged, DISTRICT_SIMPLIFY)
+            taluk_features.append(feature(geometry, taluk_meta[tname]))
+
+    write_geojson(PROCESSED_DIR / "kerala_taluks.geojson", taluk_features)
 
 
 def main() -> int:

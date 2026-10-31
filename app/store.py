@@ -58,9 +58,11 @@ class DataStore:
         self.constituencies_geojson: dict[int, str] = {}
         self.districts_geojson: dict[int, str] = {}
         self.state_geojson: str = "{}"
+        self.taluks_geojson: str = "{}"
         self.constituencies_etag: dict[int, str] = {}
         self.districts_etag: dict[int, str] = {}
         self.state_etag: str = ""
+        self.taluks_etag: str = ""
 
     def load(self, db_path: Path, processed_dir: Path) -> None:
         rows = fetch_results(db_path)
@@ -103,6 +105,10 @@ class DataStore:
 
         self.state_geojson = (processed_dir / "kerala_state.geojson").read_text(encoding="utf-8")
         self.state_etag = _etag(self.state_geojson)
+        taluks_path = processed_dir / "kerala_taluks.geojson"
+        if taluks_path.exists():
+            self.taluks_geojson = taluks_path.read_text(encoding="utf-8")
+            self.taluks_etag = _etag(self.taluks_geojson)
 
     def _summarise_districts(
         self, rows: list[dict], hq_by_district: dict[str, dict]
